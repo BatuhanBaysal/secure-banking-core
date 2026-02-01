@@ -1,0 +1,40 @@
+# --- Build Artifacts ---
+backend/target/
+bin/
+build/
+out/
+*.log
+logs/
+
+# --- Environment & Secrets ---
+.env
+*.env
+.env.local
+
+# --- IntelliJ IDEA ---
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# --- VS Code ---
+.vscode/
+*.code-workspace
+
+# --- Maven Wrapper ---
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+
+# --- OS Related ---
+.DS_Store
+Thumbs.db
+
+### STS / Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
