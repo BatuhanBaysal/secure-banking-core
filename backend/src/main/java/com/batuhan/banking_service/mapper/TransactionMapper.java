@@ -1,26 +1,24 @@
 package com.batuhan.banking_service.mapper;
 
 import com.batuhan.banking_service.dto.response.TransactionResponse;
+import com.batuhan.banking_service.entity.AccountEntity;
 import com.batuhan.banking_service.entity.TransactionEntity;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-@Component
-public class TransactionMapper {
+@Mapper(componentModel = "spring")
+public interface TransactionMapper {
 
-    public TransactionResponse toResponse(TransactionEntity entity) {
-        if (entity == null) return null;
+    @Mapping(target = "senderIban", source = "senderAccount.iban")
+    @Mapping(target = "receiverIban", source = "receiverAccount.iban")
+    @Mapping(target = "senderName", expression = "java(getFullName(entity.getSenderAccount()))")
+    @Mapping(target = "receiverName", expression = "java(getFullName(entity.getReceiverAccount()))")
+    TransactionResponse toResponse(TransactionEntity entity);
 
-        return TransactionResponse.builder()
-                .senderIban(entity.getSenderAccount().getIban())
-                .senderName(entity.getSenderAccount().getUser().getFirstName() + " " + entity.getSenderAccount().getUser().getLastName())
-                .receiverIban(entity.getReceiverAccount().getIban())
-                .receiverName(entity.getReceiverAccount().getUser().getFirstName() + " " + entity.getReceiverAccount().getUser().getLastName())
-                .amount(entity.getAmount())
-                .transactionType(entity.getTransactionType())
-                .status(entity.getStatus())
-                .description(entity.getDescription())
-                .createdAt(entity.getCreatedAt())
-                .referenceNumber(entity.getReferenceNumber())
-                .build();
+    default String getFullName(AccountEntity account) {
+        if (account == null || account.getUser() == null) {
+            return "Unknown User";
+        }
+        return account.getUser().getFirstName() + " " + account.getUser().getLastName();
     }
 }
