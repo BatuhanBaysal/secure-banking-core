@@ -3,31 +3,23 @@ package com.batuhan.banking_service.mapper;
 import com.batuhan.banking_service.dto.request.AccountCreateRequest;
 import com.batuhan.banking_service.dto.response.AccountResponse;
 import com.batuhan.banking_service.entity.AccountEntity;
-import com.batuhan.banking_service.entity.enums.AccountStatus;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-@Component
-public class AccountMapper {
+@Mapper(componentModel = "spring")
+public interface AccountMapper {
 
-    public AccountEntity toEntity(AccountCreateRequest request) {
-        return AccountEntity.builder()
-                .currency(request.getCurrency())
-                .dailyLimit(request.getDailyLimit())
-                .balance(request.getInitialBalance())
-                .status(AccountStatus.ACTIVE)
-                .isActive(true)
-                .build();
-    }
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "dailyUsage", ignore = true)
+    @Mapping(target = "sentTransactions", ignore = true)
+    @Mapping(target = "receivedTransactions", ignore = true)
+    @Mapping(target = "iban", ignore = true)
+    @Mapping(target = "balance", source = "initialBalance")
+    @Mapping(target = "status", constant = "ACTIVE")
+    @Mapping(target = "isActive", constant = "true")
+    AccountEntity toEntity(AccountCreateRequest request);
 
-    public AccountResponse toResponse(AccountEntity account) {
-        if (account == null) return null;
-
-        return AccountResponse.builder()
-                .iban(account.getIban())
-                .balance(account.getBalance())
-                .currency(account.getCurrency())
-                .status(account.getStatus())
-                .customerNumber(account.getUser() != null ? account.getUser().getCustomerNumber() : null)
-                .build();
-    }
+    @Mapping(target = "customerNumber", source = "user.customerNumber")
+    AccountResponse toResponse(AccountEntity account);
 }
