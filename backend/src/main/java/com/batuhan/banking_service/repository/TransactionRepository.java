@@ -22,8 +22,8 @@ public interface TransactionRepository extends JpaRepository<TransactionEntity, 
     Page<TransactionEntity> findAllByIban(@Param("iban") String iban, Pageable pageable);
 
     @Query("SELECT new com.batuhan.banking_service.dto.common.TransactionSummaryDTO(" +
-            "SUM(CASE WHEN t.senderAccount.iban = :iban THEN t.amount ELSE 0 END), " +
-            "SUM(CASE WHEN t.receiverAccount.iban = :iban THEN t.amount ELSE 0 END), " +
+            "COALESCE(SUM(CASE WHEN t.senderAccount.iban = :iban THEN t.amount ELSE 0 END), 0), " +
+            "COALESCE(SUM(CASE WHEN t.receiverAccount.iban = :iban THEN t.amount ELSE 0 END), 0), " +
             "COUNT(t)) " +
             "FROM TransactionEntity t WHERE t.senderAccount.iban = :iban OR t.receiverAccount.iban = :iban")
     TransactionSummaryDTO getTransactionSummary(@Param("iban") String iban);
