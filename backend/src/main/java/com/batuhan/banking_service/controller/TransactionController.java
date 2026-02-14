@@ -9,6 +9,10 @@ import com.batuhan.banking_service.dto.request.TransactionRequest;
 import com.batuhan.banking_service.dto.response.TransactionResponse;
 import com.batuhan.banking_service.service.ExcelService;
 import com.batuhan.banking_service.service.TransactionService;
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,22 +38,25 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/transactions")
 @RequiredArgsConstructor
+@Tag(name = "Transaction Management", description = "Operations related to money transfers, transaction history, and financial analytics")
 public class TransactionController {
 
     private final TransactionService transactionService;
     private final ExcelService excelService;
 
     @PostMapping("/transfer")
-    @PreAuthorize("@bankingBusinessValidator.isAccountOwner(#request.senderIban)")
+    @Operation(summary = "Transfer money between accounts", description = "Requires ADMIN role or to be the sender account owner")
+    @PreAuthorize("hasRole('ADMIN') or @bankingBusinessValidator.isAccountOwner(#request.senderIban())")
     public ResponseEntity<GlobalResponse<TransactionResponse>> transferMoney(
             @Valid @RequestBody TransactionRequest request) {
 
-        log.info("API Request: Transfer initiated from {} to {}", request.getSenderIban(), request.getReceiverIban());
+        log.info("API Request: Transfer initiated from {} to {}", request.senderIban(), request.receiverIban());
         TransactionResponse response = transactionService.transferMoney(request);
         return ResponseEntity.ok(GlobalResponse.success(response, Messages.TRANSFER_SUCCESS));
     }
 
     @GetMapping("/history/{iban}")
+    @Operation(summary = "Get transaction history for an account")
     @PreAuthorize("hasRole('ADMIN') or @bankingBusinessValidator.isAccountOwner(#iban)")
     public ResponseEntity<GlobalResponse<Page<TransactionResponse>>> getTransactionHistory(
             @PathVariable String iban,
@@ -61,6 +68,9 @@ public class TransactionController {
     }
 
     @GetMapping("/receipt/{id}")
+    @Operation(summary = "Download transaction receipt (PDF)")
+    @PreAuthorize("hasRole('ADMIN') or @bankingBusinessValidator.isTransactionOwner(#id)")
+    @RateLimiter(name = "receiptLimiter")
     public ResponseEntity<byte[]> downloadReceipt(@PathVariable Long id) {
         log.info("API Request: Generating receipt for Transaction ID: {}", id);
         byte[] pdfContent = transactionService.generateTransactionReceipt(id);
@@ -71,7 +81,8 @@ public class TransactionController {
     }
 
     @GetMapping("/filter")
-    @PreAuthorize("@bankingBusinessValidator.isAccountOwner(#iban)")
+    @Operation(summary = "Filter transactions with specific criteria")
+    @PreAuthorize("hasRole('ADMIN') or @bankingBusinessValidator.isAccountOwner(#iban)")
     public ResponseEntity<GlobalResponse<Page<TransactionResponse>>> filterTransactions(
             @RequestParam String iban,
             @RequestParam(required = false) BigDecimal minAmount,
@@ -88,7 +99,10 @@ public class TransactionController {
     }
 
     @GetMapping("/download/excel")
-    @PreAuthorize("@bankingBusinessValidator.isAccountOwner(#iban)")
+    @Operation(summary = "Export transaction history to Excel")
+    @PreAuthorize("hasRole('ADMIN') or @bankingBusinessValidator.isAccountOwner(#iban)")
+    @RateLimiter(name = "excelLimiter")
+    @Bulkhead(name = "excelBulkhead")
     public ResponseEntity<Resource> downloadTransactionsExcel(@RequestParam String iban) {
         log.info("Excel download requested for IBAN: {}", iban);
         List<TransactionResponse> transactions = transactionService.getAllTransactionsByIban(iban);
@@ -104,14 +118,17 @@ public class TransactionController {
     }
 
     @GetMapping("/dashboard/summary")
-    @PreAuthorize("@bankingBusinessValidator.isAccountOwner(#iban)")
+    @Operation(summary = "Get transaction summary for dashboard")
+    @PreAuthorize("hasRole('ADMIN') or @bankingBusinessValidator.isAccountOwner(#iban)")
     public ResponseEntity<GlobalResponse<TransactionSummaryDTO>> getDashboardSummary(@RequestParam String iban) {
+        log.info("API Request: Fetching dashboard summary for IBAN: {}", iban);
         TransactionSummaryDTO summary = transactionService.getDashboardSummary(iban);
         return ResponseEntity.ok(GlobalResponse.success(summary, "Dashboard summary retrieved"));
     }
 
     @GetMapping("/dashboard/trend")
-    @PreAuthorize("@bankingBusinessValidator.isAccountOwner(#iban)")
+    @Operation(summary = "Get weekly transaction trend")
+    @PreAuthorize("hasRole('ADMIN') or @bankingBusinessValidator.isAccountOwner(#iban)")
     public ResponseEntity<GlobalResponse<List<WeeklyTrendDTO>>> getWeeklyTrend(@RequestParam String iban) {
         log.info("API Request: Fetching weekly trend for IBAN: {}", iban);
         List<WeeklyTrendDTO> trend = transactionService.getWeeklyTrend(iban);
@@ -119,7 +136,8 @@ public class TransactionController {
     }
 
     @GetMapping("/dashboard/categories")
-    @PreAuthorize("@bankingBusinessValidator.isAccountOwner(#iban)")
+    @Operation(summary = "Get transaction analysis by categories")
+    @PreAuthorize("hasRole('ADMIN') or @bankingBusinessValidator.isAccountOwner(#iban)")
     public ResponseEntity<GlobalResponse<List<TransactionCategoryDTO>>> getCategories(@RequestParam String iban) {
         log.info("API Request: Fetching category analysis for IBAN: {}", iban);
         List<TransactionCategoryDTO> analysis = transactionService.getCategoryAnalysis(iban);
