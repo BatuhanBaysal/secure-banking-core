@@ -9,7 +9,7 @@ public class IbanValidator implements ConstraintValidator<ValidIban, String> {
 
     @Override
     public boolean isValid(String iban, ConstraintValidatorContext context) {
-        if (iban == null || iban.isBlank()) return true;
+        if (iban == null || iban.isBlank()) return false;
 
         String cleanIban = iban.replace(" ", "").toUpperCase(java.util.Locale.ENGLISH);
         if (cleanIban.length() < 15 || cleanIban.length() > 34) return false;
