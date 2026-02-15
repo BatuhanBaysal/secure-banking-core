@@ -20,9 +20,15 @@ spec:
             - name: POSTGRES_DB
               value: "banking-service"
             - name: POSTGRES_USER
-              value: "postgres"
+              valueFrom:
+                secretKeyRef:
+                  name: banking-secrets
+                  key: DB_USERNAME
             - name: POSTGRES_PASSWORD
-              value: "pgs1234"
+              valueFrom:
+                secretKeyRef:
+                  name: banking-secrets
+                  key: DB_PASSWORD
           ports:
             - containerPort: 5432
           volumeMounts:
