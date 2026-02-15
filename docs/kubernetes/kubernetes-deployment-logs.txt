@@ -1,0 +1,315 @@
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Try the new cross-platform PowerShell https://aka.ms/pscore6
+
+PS C:\Users\batuh> cd "C:\Users\batuh\Intellij Idea\secure-banking-core"
+PS C:\Users\batuh\Intellij Idea\secure-banking-core> kubectl create namespace banking
+namespace/banking created
+PS C:\Users\batuh\Intellij Idea\secure-banking-core> kubectl apply -f k8s/banking-secrets.yaml
+secret/banking-secrets created
+PS C:\Users\batuh\Intellij Idea\secure-banking-core> kubectl apply -f k8s/postgres-pvc.yaml
+persistentvolumeclaim/postgres-pvc created
+PS C:\Users\batuh\Intellij Idea\secure-banking-core> kubectl apply -f k8s/postgres-deployment.yaml
+deployment.apps/postgres created
+service/postgres created
+PS C:\Users\batuh\Intellij Idea\secure-banking-core> kubectl apply -f k8s/rabbitmq-deployment.yaml
+deployment.apps/rabbitmq created
+service/rabbitmq created
+PS C:\Users\batuh\Intellij Idea\secure-banking-core> kubectl apply -f k8s/redis-deployment.yaml
+deployment.apps/redis created
+service/redis created
+PS C:\Users\batuh\Intellij Idea\secure-banking-core> kubectl apply -f k8s/loki-deployment.yaml
+deployment.apps/loki created
+service/loki created
+PS C:\Users\batuh\Intellij Idea\secure-banking-core> kubectl apply -f k8s/grafana-deployment.yaml
+deployment.apps/grafana created
+service/grafana created
+PS C:\Users\batuh\Intellij Idea\secure-banking-core> kubectl apply -f k8s/banking-service-deployment.yaml
+deployment.apps/banking-service created
+service/banking-service created
+PS C:\Users\batuh\Intellij Idea\secure-banking-core> kubectl get pods -n banking
+NAME                               READY   STATUS    RESTARTS   AGE
+banking-service-6d46c575b6-52kdk   1/1     Running   0          7s
+grafana-7fb6b87575-m4cp8           1/1     Running   0          15s
+loki-9dd84c456-tmgfk               1/1     Running   0          20s
+postgres-6fdc94cc95-dsjhl          1/1     Running   0          38s
+rabbitmq-b4f7f88bb-54sfl           1/1     Running   0          32s
+redis-6c6fcd64b8-5846m             1/1     Running   0          26s
+PS C:\Users\batuh\Intellij Idea\secure-banking-core> kubectl get svc -n banking
+NAME              TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)              AGE
+banking-service   NodePort    10.99.90.14      <none>        8080:30080/TCP       3m9s
+grafana           NodePort    10.99.122.231    <none>        3000:32000/TCP       3m17s
+loki              ClusterIP   10.107.7.216     <none>        3100/TCP             3m22s
+postgres          ClusterIP   10.103.252.99    <none>        5432/TCP             3m40s
+rabbitmq          ClusterIP   10.111.62.238    <none>        5672/TCP,15672/TCP   3m34s
+redis             ClusterIP   10.110.167.107   <none>        6379/TCP             3m28s
+PS C:\Users\batuh\Intellij Idea\secure-banking-core> kubectl logs -f deployment/banking-service -n banking
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.1)
+
+2026-02-10T13:16:58.563Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] c.b.b.BankingServiceApplication          : Starting BankingServiceApplication v0.0.1-SNAPSHOT using Java 17.0.18 with PID 1 (/app/app.jar started by root in /app)
+2026-02-10T13:16:58.572Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] c.b.b.BankingServiceApplication          : The following 1 profile is active: "prod"
+2026-02-10T13:17:03.802Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-02-10T13:17:03.810Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-10T13:17:04.486Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 640 ms. Found 6 JPA repository interfaces.
+2026-02-10T13:17:04.527Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-02-10T13:17:04.530Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-02-10T13:17:04.570Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.batuhan.banking_service.repository.AccountLimitRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-02-10T13:17:04.571Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.batuhan.banking_service.repository.AccountRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-02-10T13:17:04.572Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.batuhan.banking_service.repository.AddressRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-02-10T13:17:04.573Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.batuhan.banking_service.repository.AuditLogRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-02-10T13:17:04.574Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.batuhan.banking_service.repository.TransactionRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-02-10T13:17:04.574Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.batuhan.banking_service.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-02-10T13:17:04.575Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 19 ms. Found 0 Redis repository interfaces.
+2026-02-10T13:17:07.641Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-02-10T13:17:07.701Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-02-10T13:17:07.702Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.34]
+2026-02-10T13:17:07.829Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-02-10T13:17:07.830Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 9166 ms
+2026-02-10T13:17:10.412Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-02-10T13:17:10.719Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.4.Final
+2026-02-10T13:17:11.029Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-02-10T13:17:12.244Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-10T13:17:12.398Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-02-10T13:17:13.101Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@3368cf02
+2026-02-10T13:17:13.105Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-02-10T13:17:13.178Z  WARN 1 --- [Banking-Service] [           main] [                                                 ] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-02-10T13:17:13.225Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+        Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+        Database driver: undefined/unknown
+        Database version: 15.15
+        Autocommit mode: undefined/unknown
+        Isolation level: undefined/unknown
+        Minimum pool size: undefined/unknown
+        Maximum pool size: undefined/unknown
+2026-02-10T13:17:16.194Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: create table account_limits (id bigint generated by default as identity, created_at timestamp(6) not null, updated_at timestamp(6) not null, daily_limit numeric(19,4) not null, is_active boolean not null, limit_date date not null, used_amount numeric(19,4) not null, account_id bigint not null, primary key (id))
+Hibernate: create table accounts (id bigint generated by default as identity, created_at timestamp(6) not null, updated_at timestamp(6) not null, balance numeric(19,2) not null, currency varchar(255) not null check (currency in ('TRY','USD','EUR','GBP')), daily_limit numeric(19,4) not null, iban varchar(34) not null, is_active boolean not null, status varchar(255) not null check (status in ('ACTIVE','SUSPENDED','CLOSED')), user_id bigint not null, primary key (id))
+Hibernate: create table addresses (id bigint generated by default as identity, created_at timestamp(6) not null, updated_at timestamp(6) not null, city varchar(255) not null, is_active boolean not null, phone_number varchar(15) not null, street varchar(255) not null, zip_code varchar(10) not null, primary key (id))
+Hibernate: create table audit_logs (id bigint generated by default as identity, created_at timestamp(6) not null, updated_at timestamp(6) not null, action varchar(255), details varchar(255), email varchar(255), primary key (id))
+Hibernate: create table transactions (id bigint generated by default as identity, created_at timestamp(6) not null, updated_at timestamp(6) not null, amount numeric(19,4) not null, description varchar(255), reference_number varchar(50) not null, status varchar(255) not null check (status in ('PENDING','COMPLETED','FAILED')), transaction_type varchar(255) not null check (transaction_type in ('TRANSFER','DEPOSIT','WITHDRAW','FEE')), receiver_account_id bigint not null, sender_account_id bigint not null, primary key (id))
+Hibernate: create table users (id bigint generated by default as identity, created_at timestamp(6) not null, updated_at timestamp(6) not null, birth_date date not null, customer_number varchar(10) not null, email varchar(100) not null, first_name varchar(50) not null, is_active boolean not null, last_name varchar(50) not null, password varchar(255) not null, role varchar(255) not null check (role in ('USER','ADMIN')), tckn varchar(11) not null, address_id bigint, primary key (id))
+Hibernate: alter table if exists account_limits drop constraint if exists UKa8rr2fnhpapt9kdhynwyl9eh
+2026-02-10T13:17:16.365Z  WARN 1 --- [Banking-Service] [           main] [                                                 ] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Warning Code: 0, SQLState: 00000
+2026-02-10T13:17:16.365Z  WARN 1 --- [Banking-Service] [           main] [                                                 ] o.h.engine.jdbc.spi.SqlExceptionHelper   : constraint "uka8rr2fnhpapt9kdhynwyl9eh" of relation "account_limits" does not exist, skipping
+Hibernate: alter table if exists account_limits add constraint UKa8rr2fnhpapt9kdhynwyl9eh unique (account_id)
+Hibernate: alter table if exists accounts drop constraint if exists UKnubpiuxhnr0f0tl3tx3y9i80u
+2026-02-10T13:17:16.374Z  WARN 1 --- [Banking-Service] [           main] [                                                 ] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Warning Code: 0, SQLState: 00000
+2026-02-10T13:17:16.375Z  WARN 1 --- [Banking-Service] [           main] [                                                 ] o.h.engine.jdbc.spi.SqlExceptionHelper   : constraint "uknubpiuxhnr0f0tl3tx3y9i80u" of relation "accounts" does not exist, skipping
+Hibernate: alter table if exists accounts add constraint UKnubpiuxhnr0f0tl3tx3y9i80u unique (iban)
+Hibernate: alter table if exists transactions drop constraint if exists UK96ogkdl6a4f18ybi32m3mi6h0
+2026-02-10T13:17:16.385Z  WARN 1 --- [Banking-Service] [           main] [                                                 ] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Warning Code: 0, SQLState: 00000
+2026-02-10T13:17:16.385Z  WARN 1 --- [Banking-Service] [           main] [                                                 ] o.h.engine.jdbc.spi.SqlExceptionHelper   : constraint "uk96ogkdl6a4f18ybi32m3mi6h0" of relation "transactions" does not exist, skipping
+Hibernate: alter table if exists transactions add constraint UK96ogkdl6a4f18ybi32m3mi6h0 unique (reference_number)
+Hibernate: alter table if exists users drop constraint if exists UKiuus62bcwct16tstujpi28x96
+2026-02-10T13:17:16.394Z  WARN 1 --- [Banking-Service] [           main] [                                                 ] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Warning Code: 0, SQLState: 00000
+2026-02-10T13:17:16.395Z  WARN 1 --- [Banking-Service] [           main] [                                                 ] o.h.engine.jdbc.spi.SqlExceptionHelper   : constraint "ukiuus62bcwct16tstujpi28x96" of relation "users" does not exist, skipping
+Hibernate: alter table if exists users add constraint UKiuus62bcwct16tstujpi28x96 unique (customer_number)
+Hibernate: alter table if exists users drop constraint if exists UK6dotkott2kjsp8vw4d0m25fb7
+2026-02-10T13:17:16.403Z  WARN 1 --- [Banking-Service] [           main] [                                                 ] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Warning Code: 0, SQLState: 00000
+2026-02-10T13:17:16.404Z  WARN 1 --- [Banking-Service] [           main] [                                                 ] o.h.engine.jdbc.spi.SqlExceptionHelper   : constraint "uk6dotkott2kjsp8vw4d0m25fb7" of relation "users" does not exist, skipping
+Hibernate: alter table if exists users add constraint UK6dotkott2kjsp8vw4d0m25fb7 unique (email)
+Hibernate: alter table if exists users drop constraint if exists UKdjjxewk0ms3ifxqd0ad5iueah
+2026-02-10T13:17:16.413Z  WARN 1 --- [Banking-Service] [           main] [                                                 ] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Warning Code: 0, SQLState: 00000
+2026-02-10T13:17:16.413Z  WARN 1 --- [Banking-Service] [           main] [                                                 ] o.h.engine.jdbc.spi.SqlExceptionHelper   : constraint "ukdjjxewk0ms3ifxqd0ad5iueah" of relation "users" does not exist, skipping
+Hibernate: alter table if exists users add constraint UKdjjxewk0ms3ifxqd0ad5iueah unique (tckn)
+Hibernate: alter table if exists account_limits add constraint FKdai0rlju3tce31sjf7tv5t05u foreign key (account_id) references accounts
+Hibernate: alter table if exists accounts add constraint FKnjuop33mo69pd79ctplkck40n foreign key (user_id) references users
+Hibernate: alter table if exists transactions add constraint FKrspclyipil8qrxop31nvc7rrc foreign key (receiver_account_id) references accounts
+Hibernate: alter table if exists transactions add constraint FK68i6gd4um71kdv786gc5exkme foreign key (sender_account_id) references accounts
+Hibernate: alter table if exists users add constraint FKe8vydtk7hf0y16bfm558sywbb foreign key (address_id) references addresses
+2026-02-10T13:17:16.446Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-10T13:17:18.173Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-02-10T13:17:22.315Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2026-02-10T13:17:22.316Z  WARN 1 --- [Banking-Service] [           main] [                                                 ] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2026-02-10T13:17:26.987Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 27 endpoints beneath base path '/actuator'
+2026-02-10T13:17:30.520Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-02-10T13:17:30.533Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] o.s.a.r.c.CachingConnectionFactory       : Attempting to connect to: [rabbitmq:5672]
+2026-02-10T13:17:30.843Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] o.s.a.r.c.CachingConnectionFactory       : Created new connection: rabbitConnectionFactory#7c26f301:0/SimpleConnection@289fda20 [delegate=amqp://guest@10.111.62.238:5672/, localPort=41376]
+2026-02-10T13:17:31.074Z  INFO 1 --- [Banking-Service] [           main] [                                                 ] c.b.b.BankingServiceApplication          : Started BankingServiceApplication in 35.242 seconds (process running for 37.889)
+Hibernate: select count(*) from users ue1_0
+>>> Initializing Mega Data Seeding (25 records per table)...
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: insert into addresses (city,created_at,is_active,phone_number,street,updated_at,zip_code) values (?,?,?,?,?,?,?)
+Hibernate: insert into users (address_id,birth_date,created_at,customer_number,email,first_name,is_active,last_name,password,role,tckn,updated_at) values (?,?,?,?,?,?,?,?,?,?,?,?)
+Hibernate: insert into accounts (balance,created_at,currency,daily_limit,iban,is_active,status,updated_at,user_id) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into account_limits (account_id,created_at,daily_limit,is_active,limit_date,updated_at,used_amount) values (?,?,?,?,?,?,?)
+Hibernate: select ae1_0.id,ae1_0.balance,ae1_0.created_at,ae1_0.currency,ae1_0.daily_limit,ae1_0.iban,ae1_0.is_active,ae1_0.status,ae1_0.updated_at,ae1_0.user_id from accounts ae1_0
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: select ale1_0.id,ale1_0.account_id,ale1_0.created_at,ale1_0.daily_limit,ale1_0.is_active,ale1_0.limit_date,ale1_0.updated_at,ale1_0.used_amount from account_limits ale1_0 where ale1_0.account_id=?
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into transactions (amount,created_at,description,receiver_account_id,reference_number,sender_account_id,status,transaction_type,updated_at) values (?,?,?,?,?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+Hibernate: insert into audit_logs (action,created_at,details,email,updated_at) values (?,?,?,?,?)
+>>> Mega Seeding Success: 25 Users, 25 Accounts, 25 Limits, 25 Transactions, and 25 Logs created.
