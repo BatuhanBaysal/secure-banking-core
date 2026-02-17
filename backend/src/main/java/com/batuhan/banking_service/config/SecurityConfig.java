@@ -48,7 +48,6 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
-                        // Secured Endpoints
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
