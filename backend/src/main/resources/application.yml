@@ -1,3 +1,5 @@
+# --- SERVER CONFIGURATION ---
+# Defines the application's port and the root context path
 server:
   port: 8080
   servlet:
@@ -5,24 +7,51 @@ server:
 
 spring:
   application:
-    name: Banking Service
+    name: Banking-Service
 
+  # --- DATABASE CONNECTION (PostgreSQL) ---
+  # Main data store connection settings with Hikari connection pooling
   datasource:
-    url: jdbc:postgresql://${DB_URL}
+    url: jdbc:postgresql://${DB_URL:localhost:5432/banking-service}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
 
+  # --- JPA & HIBERNATE SETTINGS ---
+  # 'update' mode ensures that seeded data is preserved across restarts
   jpa:
+    defer-datasource-initialization: false
     hibernate:
       ddl-auto: update
     show-sql: true
     open-in-view: false
     properties:
       hibernate:
-        format_sql: true
-        default_schema: public
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        globally_quoted_identifiers: false
+        jdbc.batch_size: 25
+        order_inserts: true
 
+  # --- SECURITY (OAuth2/Keycloak) ---
+  # Configures the Resource Server to validate JWTs from Keycloak
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://keycloak:8080/realms/banking-realm/protocol/openid-connect/certs
+
+  # --- DATABASE MIGRATIONS (Liquibase) ---
+  # Version control for database schema (currently disabled)
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    drop-first: false
+
+  # --- MAIL SERVICE (SMTP) ---
+  # Outgoing mail server configuration for notifications
   mail:
     host: sandbox.smtp.mailtrap.io
     port: 2525
@@ -35,28 +64,115 @@ spring:
           starttls:
             enable: true
 
+  # --- MESSAGE BROKER (RabbitMQ) ---
+  # Asynchronous communication and retry logic settings
+  rabbitmq:
+    host: ${RABBITMQ_HOST:rabbitmq}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    listener:
+      simple:
+        retry:
+          enabled: true
+          initial-interval: 2000ms
+          max-attempts: 3
+
+  # --- DISTRIBUTED CACHE (Redis) ---
+  # In-memory data storage for improved performance
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600000
+      cache-null-values: false
+
+# --- KEYCLOAK & CUSTOM SECURITY ---
+keycloak:
+  realm: banking-realm
+  auth-server-url: http://keycloak:8080
+  resource: banking-service-client
+  credentials:
+    secret: ${KC_CLIENT_SECRET:kIIp1b0qUNLBC6uLR3Ov32VEQnRi54SZ}
+
 application:
   security:
     jwt:
       secret-key: ${JWT_SECRET}
       expiration: 86400000
 
+# --- FAULT TOLERANCE (Resilience4j) ---
+# Configurations for Circuit Breakers, Rate Limiters, and Bulkheads
+resilience4j:
+  circuitbreaker:
+    instances:
+      receiptService:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowType: COUNT_BASED
+        minimumNumberOfCalls: 5
+        waitDurationInOpenState: 10s
+        failureRateThreshold: 50
+        eventConsumerBufferSize: 10
+      rabbitMQService:
+        registerHealthIndicator: true
+        slidingWindowSize: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 30s
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+
+  ratelimiter:
+    instances:
+      userCreationLimiter:
+        limitForPeriod: 20
+        limitRefreshPeriod: 1m
+        timeoutDuration: 0s
+      accountCreationLimiter:
+        limitForPeriod: 20
+        limitRefreshPeriod: 1m
+        timeoutDuration: 0s
+      receiptLimiter:
+        limitForPeriod: 10
+        limitRefreshPeriod: 1m
+        timeoutDuration: 0s
+      excelLimiter:
+        limitForPeriod: 5
+        limitRefreshPeriod: 1m
+        timeoutDuration: 0s
+      authLimiter:
+        limitForPeriod: 50
+        limitRefreshPeriod: 1m
+        timeoutDuration: 0s
+
+  bulkhead:
+    instances:
+      excelBulkhead:
+        maxConcurrentCalls: 3
+        maxWaitDuration: 0s
+
+# --- MONITORING & OBSERVABILITY ---
+# Logging levels and Prometheus metric endpoints
 logging:
   level:
     root: INFO
     com.batuhan.banking_service: INFO
-    org.hibernate.SQL: INFO
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.security: DEBUG
 
-  file:
-    name: logs/banking-service.log
-
-  logback:
-    rollingpolicy:
-      max-file-size: 10MB
-      max-history: 7
-      total-size-cap: 100MB
-
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    export:
+      prometheus:
+        enabled: true
