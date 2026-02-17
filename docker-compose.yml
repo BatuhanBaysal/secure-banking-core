@@ -1,6 +1,7 @@
 services:
+  # --- DATABASE LAYER ---
   postgres-db:
-    image: postgres:15
+    image: postgres:15-alpine
     container_name: postgres-db
     environment:
       POSTGRES_DB: banking-service
@@ -10,21 +11,159 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    command: >
+      sh -c "docker-entrypoint.sh postgres &
+      sleep 5;
+      psql -U ${DB_USERNAME} -d banking-service -c 'CREATE DATABASE \"keycloak-db\";' || true;
+      wait"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d banking-service"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - banking-net
+    restart: unless-stopped
 
+  # --- CACHING LAYER ---
+  redis-cache:
+    image: redis:7-alpine
+    container_name: redis-cache
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - banking-net
+
+  # --- MAIN APPLICATION (BACKEND) ---
   banking-app:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: banking-service-app
     ports:
       - "8080:8080"
     depends_on:
-      - postgres-db
+      postgres-db:
+        condition: service_healthy
+      redis-cache:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
     environment:
-      DB_URL: postgres-db:5432/banking-service
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      MAIL_USERNAME: ${MAIL_USERNAME}
-      MAIL_PASSWORD: ${MAIL_PASSWORD}
-      JWT_SECRET: ${JWT_SECRET}
+      - DB_URL=postgres-db:5432/banking-service
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - REDIS_HOST=redis-cache
+      - REDIS_PORT=6379
+      - RABBITMQ_HOST=rabbitmq
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - KC_CLIENT_SECRET=kIIp1b0qUNLBC6uLR3Ov32VEQnRi54SZ
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://jaeger:9411/api/v2/spans
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8080/realms/banking-realm/protocol/openid-connect/certs
+    volumes:
+      - maven-repo:/root/.m2
+    networks:
+      - banking-net
+    restart: on-failure
+
+  # --- IDENTITY & ACCESS MANAGEMENT (IAM) ---
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0.5
+    container_name: keycloak
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB=postgres
+      - KC_DB_URL_HOST=postgres-db
+      - KC_DB_URL_DATABASE=keycloak-db
+      - KC_DB_USERNAME=${DB_USERNAME}
+      - KC_DB_PASSWORD=${DB_PASSWORD}
+      - KC_HOSTNAME_STRICT=false
+      - KC_HTTP_ENABLED=true
+      - KC_HOSTNAME_STRICT_HTTPS=false
+      - KC_HOSTNAME_URL=http://localhost:8081
+      - KC_PROXY=edge
+    ports:
+      - "8081:8080"
+    command: start-dev
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    networks:
+      - banking-net
+    restart: unless-stopped
+
+  # --- METRICS & MONITORING (Prometheus & Grafana) ---
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - banking-net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - banking-net
+
+  # --- DISTRIBUTED TRACING (Jaeger) ---
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    environment:
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+      - "4318:4318"
+      - "9411:9411"
+    networks:
+      - banking-net
+
+  # --- LOG MANAGEMENT (Loki) ---
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - banking-net
+
+  # --- ASYNC MESSAGING (RabbitMQ) ---
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    networks:
+      - banking-net
+
+networks:
+  banking-net:
+    driver: bridge
 
 volumes:
   pgdata:
+  maven-repo:
