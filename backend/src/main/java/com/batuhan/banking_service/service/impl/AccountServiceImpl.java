@@ -12,11 +12,13 @@ import com.batuhan.banking_service.service.AccountService;
 import com.batuhan.banking_service.service.helper.BankingBusinessValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,24 +36,25 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public AccountResponse createAccount(AccountCreateRequest request) {
-        log.info("Starting account creation for Customer: {}", request.getCustomerNumber());
-        UserEntity user = businessValidator.validateAndGetCustomer(request.getCustomerNumber());
+        log.info("Starting account creation process for Customer: {}", request.customerNumber());
+        UserEntity user = businessValidator.validateAndGetCustomer(request.customerNumber());
         businessValidator.validateOwnership(user);
-        businessValidator.validateMaxAccountCount(user);
 
+        businessValidator.validateMaxAccountCount(user);
         AccountEntity account = prepareNewAccount(request, user);
         AccountEntity savedAccount = accountRepository.save(account);
 
-        log.info("Successfully created account. IBAN: {}", savedAccount.getIban());
+        log.info("Successfully created account. IBAN: {}, Currency: {}",
+                savedAccount.getIban(), savedAccount.getCurrency());
         return accountMapper.toResponse(savedAccount);
     }
 
     @Override
     @Transactional(readOnly = true)
     public AccountResponse getAccountByIban(String iban) {
-        AccountEntity account = accountRepository.findByIban(iban)
-                .orElseThrow(() -> new BankingServiceException("Account not found: " + iban, HttpStatus.NOT_FOUND));
-
+        String cleanIban = iban.trim();
+        log.info("Fetching account details for IBAN: [{}]", cleanIban);
+        AccountEntity account = findAccountEntity(cleanIban);
         businessValidator.validateOwnership(account.getUser());
         return accountMapper.toResponse(account);
     }
@@ -59,6 +62,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional(readOnly = true)
     public List<AccountResponse> getAccountsByCustomerNumber(String customerNumber) {
+        log.info("Listing accounts for customer: {}", customerNumber);
         UserEntity user = businessValidator.validateAndGetCustomer(customerNumber);
         businessValidator.validateOwnership(user);
         return accountRepository.findByUserCustomerNumber(customerNumber).stream()
@@ -68,35 +72,49 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "accounts", key = "#iban")
     public void closeAccount(String iban) {
-        log.warn("Initiating account closure for IBAN: {}", iban);
-        AccountEntity account = accountRepository.findByIban(iban)
-                .orElseThrow(() -> new BankingServiceException("Account not found with IBAN: " + iban, HttpStatus.NOT_FOUND));
+        String cleanIban = iban.trim();
+        log.warn("Initiating account closure for IBAN: {}", cleanIban);
+
+        AccountEntity account = findAccountEntity(cleanIban);
 
         businessValidator.validateOwnership(account.getUser());
-        if (account.getBalance().compareTo(BigDecimal.ZERO) > 0) {
-            throw new BankingServiceException("Cannot close account with remaining balance. Please withdraw funds first.", HttpStatus.BAD_REQUEST);
-        }
+        validateAccountForClosure(account);
 
         account.setStatus(AccountStatus.CLOSED);
         account.setActive(false);
-        accountRepository.save(account);
 
-        log.info("Account successfully closed: {}", iban);
+        accountRepository.save(account);
+        log.info("Account {} successfully closed", cleanIban);
+    }
+
+    private AccountEntity findAccountEntity(String iban) {
+        return accountRepository.findByIban(iban)
+                .orElseThrow(() -> new BankingServiceException("Account not found with IBAN: " + iban, HttpStatus.NOT_FOUND));
+    }
+
+    private void validateAccountForClosure(AccountEntity account) {
+        if (account.getBalance().compareTo(BigDecimal.ZERO) > 0) {
+            log.error("Closure failed for IBAN: {}. Balance is not zero.", account.getIban());
+            throw new BankingServiceException("Cannot close account with remaining balance: " + account.getBalance(), HttpStatus.BAD_REQUEST);
+        }
+
+        if (account.getStatus() == AccountStatus.CLOSED) {
+            throw new BankingServiceException("Account is already closed.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     private AccountEntity prepareNewAccount(AccountCreateRequest request, UserEntity user) {
         AccountEntity account = accountMapper.toEntity(request);
         account.setUser(user);
         account.setIban(generateUniqueIban());
-
-        BigDecimal initialBalance = request.getInitialBalance() != null ? request.getInitialBalance() : BigDecimal.ZERO;
-        account.setBalance(initialBalance);
         account.setStatus(AccountStatus.ACTIVE);
         account.setActive(true);
+        account.setBalance(BigDecimal.ZERO);
 
-        if (account.getDailyLimit() == null) {
-            account.setDailyLimit(new BigDecimal("5000.00"));
+        if (account.getDailyLimit() == null || account.getDailyLimit().compareTo(BigDecimal.ZERO) == 0) {
+            account.setDailyLimit(new BigDecimal("50000.00"));
         }
 
         return account;
@@ -104,22 +122,29 @@ public class AccountServiceImpl implements AccountService {
 
     private String generateUniqueIban() {
         String iban;
+        int attempts = 0;
         do {
-            String countryCode = "TR";
-            String bankCode = "00062";
-
-            StringBuilder accountPart = new StringBuilder();
-            for (int i = 0; i < 17; i++) {
-                accountPart.append(secureRandom.nextInt(10));
+            iban = buildIbanString();
+            attempts++;
+            if (attempts > 10) {
+                throw new BankingServiceException("Could not generate a unique IBAN after 10 attempts", HttpStatus.INTERNAL_SERVER_ERROR);
             }
-
-            String forCheck = bankCode + accountPart + "292700";
-            java.math.BigInteger checkNum = new java.math.BigInteger(forCheck);
-            int checkDigit = 98 - checkNum.mod(new java.math.BigInteger("97")).intValue();
-
-            iban = countryCode + String.format("%02d", checkDigit) + bankCode + accountPart;
         } while (accountRepository.existsByIban(iban));
-
         return iban;
+    }
+
+    private String buildIbanString() {
+        String countryCode = "TR";
+        String bankCode = "00062";
+        StringBuilder accountPart = new StringBuilder();
+        for (int i = 0; i < 17; i++) {
+            accountPart.append(secureRandom.nextInt(10));
+        }
+
+        String forCheck = bankCode + accountPart + "292700";
+        BigInteger checkNum = new BigInteger(forCheck);
+        int checkDigit = 98 - checkNum.mod(new BigInteger("97")).intValue();
+
+        return countryCode + String.format("%02d", checkDigit) + bankCode + accountPart;
     }
 }

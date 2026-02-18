@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -20,16 +19,15 @@ public class EmailServiceImpl implements EmailService {
     private static final String SUBJECT_PREFIX = "Transfer Notification - Ref: ";
 
     @Override
-    @Async
     public void sendTransferEmail(String toEmail, String name, BigDecimal amount, String receiverIban, String referenceNumber) {
         log.info("Preparing to send notification email for Ref: {}", referenceNumber);
 
         try {
             SimpleMailMessage message = prepareTransferMessage(toEmail, name, amount, receiverIban, referenceNumber);
             mailSender.send(message);
-            log.info("Notification email sent successfully for Ref: {}", referenceNumber);
+            log.info("Notification email successfully sent to: {} for Ref: {}", toEmail, referenceNumber);
         } catch (Exception e) {
-            log.error("Error occurred while sending email for Ref {}: {}", referenceNumber, e.getMessage());
+            log.error("CRITICAL: Failed to send notification email for Ref {}. Reason: {}", referenceNumber, e.getMessage());
         }
     }
 
@@ -44,9 +42,10 @@ public class EmailServiceImpl implements EmailService {
 
     private String buildTransferEmailBody(String name, BigDecimal amount, String receiverIban, String referenceNumber) {
         return String.format(
-                "Dear %s,\n\nA transfer of %s TRY has been successfully made to IBAN %s.\n\n" +
+                "Dear %s,\n\nA transfer of %s has been successfully made to IBAN %s.\n\n" +
                         "Reference Number: %s\n\n" +
-                        "You can use this reference number for your inquiries. Have a nice day.",
+                        "You can use this reference number for your inquiries. Have a nice day.\n\n" +
+                        "Batuhan Banking Digital Services",
                 name, amount, receiverIban, referenceNumber
         );
     }
