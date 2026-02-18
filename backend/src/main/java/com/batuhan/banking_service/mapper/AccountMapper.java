@@ -10,14 +10,15 @@ import org.mapstruct.Mapping;
 public interface AccountMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "externalId", ignore = true)
     @Mapping(target = "user", ignore = true)
-    @Mapping(target = "dailyUsage", ignore = true)
-    @Mapping(target = "sentTransactions", ignore = true)
-    @Mapping(target = "receivedTransactions", ignore = true)
     @Mapping(target = "iban", ignore = true)
-    @Mapping(target = "balance", source = "initialBalance")
     @Mapping(target = "status", constant = "ACTIVE")
-    @Mapping(target = "isActive", constant = "true")
+    @Mapping(target = "active", constant = "true")
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "lastModifiedBy", ignore = true)
+    @Mapping(target = "version", ignore = true)
     AccountEntity toEntity(AccountCreateRequest request);
 
     @Mapping(target = "customerNumber", source = "user.customerNumber")

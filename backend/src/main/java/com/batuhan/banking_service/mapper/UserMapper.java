@@ -10,15 +10,31 @@ import org.mapstruct.*;
 public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "externalId", ignore = true)
     @Mapping(target = "customerNumber", ignore = true)
     @Mapping(target = "accounts", ignore = true)
     @Mapping(target = "role", constant = "USER")
-    @Mapping(target = "isActive", constant = "true")
+    @Mapping(target = "active", constant = "true")
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "lastModifiedBy", ignore = true)
+    @Mapping(target = "version", ignore = true)
     UserEntity toEntity(UserCreateRequest request);
 
-    @Mapping(target = "createdAt", source = "createdAt")
     UserResponse toResponse(UserEntity user);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntityFromRequest(UserUpdateRequest request, @MappingTarget UserEntity entity);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "externalId", ignore = true)
+    @Mapping(target = "customerNumber", ignore = true)
+    @Mapping(target = "tckn", ignore = true)
+    @Mapping(target = "birthDate", ignore = true)
+    @Mapping(target = "accounts", ignore = true)
+    @Mapping(target = "role", ignore = true)
+    @Mapping(target = "active", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "lastModifiedBy", ignore = true)
+    @Mapping(target = "version", ignore = true)
+    void updateEntityFromDto(UserUpdateRequest request, @MappingTarget UserEntity user);
 }
