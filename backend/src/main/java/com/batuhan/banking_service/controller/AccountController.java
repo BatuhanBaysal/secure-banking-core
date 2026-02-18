@@ -7,6 +7,7 @@ import com.batuhan.banking_service.dto.common.GlobalResponse;
 import com.batuhan.banking_service.service.AccountService;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,8 @@ public class AccountController {
     private final AccountService accountService;
 
     @PostMapping
-    @Operation(summary = "Create a new bank account", description = "Admin or the account owner can create a new account for a specific customer number")
+    @Operation(summary = "Create a new bank account", description = "Allows Admin or Owner to create a new account.")
+    @ApiResponse(responseCode = "201", description = "Account created successfully")
     @PreAuthorize("hasRole('ADMIN') or @bankingBusinessValidator.isOwner(#request.customerNumber())")
     @RateLimiter(name = "accountCreationLimiter")
     public ResponseEntity<GlobalResponse<AccountResponse>> createAccount(@Valid @RequestBody AccountCreateRequest request) {
@@ -50,8 +52,8 @@ public class AccountController {
     @Operation(summary = "Get account details by IBAN")
     @PreAuthorize("hasRole('ADMIN') or @bankingBusinessValidator.isAccountOwner(#iban)")
     public ResponseEntity<GlobalResponse<AccountResponse>> getAccountByIban(@PathVariable String iban) {
-        log.info("API Request: Get account details for IBAN: {}", iban);
-        AccountResponse response = accountService.getAccountByIban(iban);
+        log.info("API Request: Get account details for IBAN: {}", iban.substring(0, 4) + "...");
+        AccountResponse response = accountService.getAccountByIban(iban.trim());
         return ResponseEntity.ok(GlobalResponse.success(response, Messages.ACCOUNT_RETRIEVED));
     }
 
@@ -69,7 +71,7 @@ public class AccountController {
     @PreAuthorize("hasRole('ADMIN') or @bankingBusinessValidator.isAccountOwner(#iban)")
     public ResponseEntity<GlobalResponse<Void>> closeAccount(@PathVariable String iban) {
         log.warn("API Request: CLOSE account IBAN: {}", iban);
-        accountService.closeAccount(iban);
+        accountService.closeAccount(iban.trim());
         return ResponseEntity.ok(GlobalResponse.success(null, Messages.ACCOUNT_CLOSED));
     }
 }

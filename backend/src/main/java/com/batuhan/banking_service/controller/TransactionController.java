@@ -84,16 +84,17 @@ public class TransactionController {
     @Operation(summary = "Filter transactions with specific criteria")
     @PreAuthorize("hasRole('ADMIN') or @bankingBusinessValidator.isAccountOwner(#iban)")
     public ResponseEntity<GlobalResponse<Page<TransactionResponse>>> filterTransactions(
-            @RequestParam String iban,
+            @RequestParam("iban") String iban,
             @RequestParam(required = false) BigDecimal minAmount,
             @RequestParam(required = false) BigDecimal maxAmount,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        log.info("API Request: Filtering transactions for IBAN: {}", iban);
+        String cleanIban = iban.trim();
+        log.info("API Request: Filtering transactions for IBAN: {}", cleanIban);
         Page<TransactionResponse> result = transactionService.filterTransactions(
-                iban, minAmount, maxAmount, startDate, endDate, pageable);
+                cleanIban, minAmount, maxAmount, startDate, endDate, pageable);
 
         return ResponseEntity.ok(GlobalResponse.success(result, "Transactions filtered successfully"));
     }
@@ -103,12 +104,13 @@ public class TransactionController {
     @PreAuthorize("hasRole('ADMIN') or @bankingBusinessValidator.isAccountOwner(#iban)")
     @RateLimiter(name = "excelLimiter")
     @Bulkhead(name = "excelBulkhead")
-    public ResponseEntity<Resource> downloadTransactionsExcel(@RequestParam String iban) {
-        log.info("Excel download requested for IBAN: {}", iban);
-        List<TransactionResponse> transactions = transactionService.getAllTransactionsByIban(iban);
+    public ResponseEntity<Resource> downloadTransactionsExcel(@RequestParam("iban") String iban) {
+        String cleanIban = iban.trim();
+        log.info("Excel download requested for IBAN: {}", cleanIban);
+        List<TransactionResponse> transactions = transactionService.getAllTransactionsByIban(cleanIban);
         ByteArrayInputStream in = excelService.transactionsToExcel(transactions);
 
-        String filename = "transactions_" + iban + ".xlsx";
+        String filename = "transactions_" + cleanIban + ".xlsx";
         InputStreamResource file = new InputStreamResource(in);
 
         return ResponseEntity.ok()

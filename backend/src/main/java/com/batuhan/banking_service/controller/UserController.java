@@ -56,7 +56,7 @@ public class UserController {
     @Operation(summary = "Update user details", description = "Requires ADMIN role or to be the profile owner")
     @PreAuthorize("hasRole('ADMIN') or @bankingBusinessValidator.isOwner(#customerNumber)")
     public ResponseEntity<GlobalResponse<UserResponse>> updateUser(
-            @PathVariable String customerNumber,
+            @PathVariable("customerNumber") String customerNumber,
             @Valid @RequestBody UserUpdateRequest request) {
         log.info("API Request: Update user: {}", customerNumber);
         UserResponse response = userService.updateUser(customerNumber, request);
