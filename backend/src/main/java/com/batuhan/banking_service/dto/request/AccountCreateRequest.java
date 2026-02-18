@@ -8,9 +8,17 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public record AccountCreateRequest(
-        @NotBlank(message = "Customer number is required") String customerNumber,
-        @NotNull(message = "Currency type is required") CurrencyType currency,
+
+        @NotBlank(message = "Customer number is required")
+        String customerNumber,
+
+        @NotNull(message = "Currency type is required")
+        CurrencyType currency,
+
         @NotNull(message = "Daily limit is required")
-        @DecimalMin(value = "0.0", inclusive = false) BigDecimal dailyLimit,
-        @DecimalMin(value = "0.0") BigDecimal initialBalance
+        @DecimalMin(value = "0.0", inclusive = false)
+        BigDecimal dailyLimit,
+
+        @DecimalMin(value = "0.0")
+        BigDecimal initialBalance
 ) {}

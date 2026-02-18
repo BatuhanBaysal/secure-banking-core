@@ -5,9 +5,11 @@ import com.batuhan.banking_service.entity.enums.TransactionType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record TransactionResponse(
-        Long id,
+
+        UUID externalId,
         String senderIban,
         String senderName,
         String receiverIban,
