@@ -26,5 +26,5 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
     @Query("SELECT a FROM AccountEntity a JOIN FETCH a.user WHERE a.iban = :iban")
     Optional<AccountEntity> findByIbanWithLock(@Param("iban") String iban);
 
-    List<AccountEntity> findByIsActiveTrue();
+    List<AccountEntity> findByActiveTrue();
 }
