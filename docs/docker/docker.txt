@@ -5,7 +5,7 @@ DOCKER DEPLOYMENT AND MANAGEMENT GUIDE
 docker compose up -d --build
 
 2. Start Infrastructure Services (Database, Cache, and Message Broker):
-docker compose up -d postgres-db redis-cache rabbitmq
+docker compose up -d postgres-db redis-cache rabbitmq sonarqube
 
 3. Start Identity and Access Management (Security):
 docker compose up -d keycloak
@@ -21,6 +21,9 @@ docker logs -f banking-service-app
 
 7. Monitor Keycloak Logs (Real-time):
 docker logs -f keycloak
+
+8. Sonar-qube
+.\mvnw.cmd clean verify sonar:sonar "-Dsonar.login={SONAR_TOKEN}"
 
 ---
 Troubleshooting Tip:

@@ -2,12 +2,16 @@ package com.batuhan.banking_service.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import java.util.regex.Pattern;
 
 public class TcknValidator implements ConstraintValidator<ValidTckn, String> {
 
+    private static final String TCKN_REGEX = "^[1-9]\\d{10}$";
+    private static final Pattern TCKN_PATTERN = Pattern.compile(TCKN_REGEX);
+
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        if (value == null || value.length() != 11 || !value.matches("^[1-9][0-9]{10}$")) {
+        if (value == null || value.length() != 11 || !TCKN_PATTERN.matcher(value).matches()) {
             return false;
         }
 
@@ -21,7 +25,9 @@ public class TcknValidator implements ConstraintValidator<ValidTckn, String> {
             int evenSum = digits[1] + digits[3] + digits[5] + digits[7];
 
             int calculatedTenth = ((oddSum * 7) - evenSum) % 10;
-            if (calculatedTenth < 0) calculatedTenth += 10;
+            if (calculatedTenth < 0) {
+                calculatedTenth += 10;
+            }
 
             if (calculatedTenth != digits[9]) {
                 return false;
@@ -32,12 +38,7 @@ public class TcknValidator implements ConstraintValidator<ValidTckn, String> {
                 totalSum += digits[i];
             }
 
-            int calculatedEleventh = totalSum % 10;
-            if (calculatedEleventh != digits[10]) {
-                return false;
-            }
-
-            return true;
+            return (totalSum % 10) == digits[10];
 
         } catch (Exception e) {
             return false;

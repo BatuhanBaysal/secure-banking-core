@@ -27,7 +27,7 @@ public class EmailServiceImpl implements EmailService {
             mailSender.send(message);
             log.info("Notification email successfully sent to: {} for Ref: {}", toEmail, referenceNumber);
         } catch (Exception e) {
-            log.error("CRITICAL: Failed to send notification email for Ref {}. Reason: {}", referenceNumber, e.getMessage());
+            log.error("CRITICAL: Failed to send notification email for Ref {}. Reason: {}", referenceNumber, e.getMessage(), e);
         }
     }
 
@@ -41,12 +41,16 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private String buildTransferEmailBody(String name, BigDecimal amount, String receiverIban, String referenceNumber) {
-        return String.format(
-                "Dear %s,\n\nA transfer of %s has been successfully made to IBAN %s.\n\n" +
-                        "Reference Number: %s\n\n" +
-                        "You can use this reference number for your inquiries. Have a nice day.\n\n" +
-                        "Batuhan Banking Digital Services",
-                name, amount, receiverIban, referenceNumber
-        );
+        return """
+                Dear %s,
+                
+                A transfer of %s has been successfully made to IBAN %s.
+                
+                Reference Number: %s
+                
+                You can use this reference number for your inquiries. Have a nice day.
+                
+                Batuhan Banking Digital Services
+                """.formatted(name, amount, receiverIban, referenceNumber);
     }
 }

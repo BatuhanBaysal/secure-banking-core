@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -30,7 +31,7 @@ public class BankingBusinessValidator {
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
     private final AccountLimitRepository limitRepository;
-    private  final TransactionRepository transactionRepository;
+    private final TransactionRepository transactionRepository;
 
     public UserEntity validateAndGetCustomer(String customerNumber) {
         return userRepository.findByCustomerNumber(customerNumber)
@@ -63,7 +64,7 @@ public class BankingBusinessValidator {
         if (isAdmin()) return true;
 
         String currentUserEmail = getAuthenticatedUserEmail();
-        return accountRepository.findByIban(iban.trim())
+        return accountRepository.findByIban(Objects.requireNonNull(iban).trim())
                 .map(account -> account.getUser().getEmail().equalsIgnoreCase(currentUserEmail))
                 .orElse(false);
     }
@@ -85,8 +86,7 @@ public class BankingBusinessValidator {
 
         String currentUserEmail = getAuthenticatedUserEmail();
         log.info("[SECURITY CHECK] Current User: {}, Target User: {}", currentUserEmail, targetUser.getEmail());
-
-        if (targetUser == null || currentUserEmail == null || !targetUser.getEmail().equalsIgnoreCase(currentUserEmail)) {
+        if (currentUserEmail == null || !targetUser.getEmail().equalsIgnoreCase(currentUserEmail)) {
             log.error("SECURITY ALERT: Access Denied for User {}", currentUserEmail);
             throw new BankingServiceException("Access Denied: You are not authorized for this operation!", HttpStatus.FORBIDDEN);
         }

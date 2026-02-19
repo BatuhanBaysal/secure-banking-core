@@ -21,7 +21,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +31,8 @@ public class AccountServiceImpl implements AccountService {
     private final AccountMapper accountMapper;
     private final BankingBusinessValidator businessValidator;
     private final SecureRandom secureRandom = new SecureRandom();
+
+    private static final String IBAN_ALREADY_EXISTS = "Could not generate a unique IBAN after 10 attempts";
 
     @Override
     @Transactional
@@ -67,7 +68,7 @@ public class AccountServiceImpl implements AccountService {
         businessValidator.validateOwnership(user);
         return accountRepository.findByUserCustomerNumber(customerNumber).stream()
                 .map(accountMapper::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -127,7 +128,7 @@ public class AccountServiceImpl implements AccountService {
             iban = buildIbanString();
             attempts++;
             if (attempts > 10) {
-                throw new BankingServiceException("Could not generate a unique IBAN after 10 attempts", HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new BankingServiceException(IBAN_ALREADY_EXISTS, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } while (accountRepository.existsByIban(iban));
         return iban;
@@ -136,6 +137,7 @@ public class AccountServiceImpl implements AccountService {
     private String buildIbanString() {
         String countryCode = "TR";
         String bankCode = "00062";
+
         StringBuilder accountPart = new StringBuilder();
         for (int i = 0; i < 17; i++) {
             accountPart.append(secureRandom.nextInt(10));
@@ -143,7 +145,7 @@ public class AccountServiceImpl implements AccountService {
 
         String forCheck = bankCode + accountPart + "292700";
         BigInteger checkNum = new BigInteger(forCheck);
-        int checkDigit = 98 - checkNum.mod(new BigInteger("97")).intValue();
+        int checkDigit = 98 - checkNum.mod(BigInteger.valueOf(97)).intValue();
 
         return countryCode + String.format("%02d", checkDigit) + bankCode + accountPart;
     }

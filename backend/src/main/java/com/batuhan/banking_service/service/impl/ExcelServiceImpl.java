@@ -1,10 +1,12 @@
 package com.batuhan.banking_service.service.impl;
 
 import com.batuhan.banking_service.dto.response.TransactionResponse;
+import com.batuhan.banking_service.exception.BankingServiceException;
 import com.batuhan.banking_service.service.ExcelService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -23,7 +25,9 @@ public class ExcelServiceImpl implements ExcelService {
 
     @Override
     public ByteArrayInputStream transactionsToExcel(List<TransactionResponse> transactions) {
-        try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+        try (Workbook workbook = new XSSFWorkbook();
+             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
             Sheet sheet = workbook.createSheet(SHEET_NAME);
 
             CellStyle headerStyle = createHeaderStyle(workbook);
@@ -37,9 +41,10 @@ public class ExcelServiceImpl implements ExcelService {
             workbook.write(out);
             log.info("Excel report generated successfully with {} rows", transactions.size());
             return new ByteArrayInputStream(out.toByteArray());
+
         } catch (IOException e) {
-            log.error("Excel generation failed: {}", e.getMessage());
-            throw new RuntimeException("Excel generation failed: " + e.getMessage());
+            log.error("Excel generation failed for {} transactions: {}", transactions.size(), e.getMessage());
+            throw new BankingServiceException("Failed to generate Excel report", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -94,7 +99,7 @@ public class ExcelServiceImpl implements ExcelService {
             createCell(row, 4, dto.receiverIban(), dataStyle);
 
             Cell amountCell = row.createCell(5);
-            amountCell.setCellValue(dto.amount().doubleValue());
+            amountCell.setCellValue(dto.amount() != null ? dto.amount().doubleValue() : 0.0);
             amountCell.setCellStyle(amountStyle);
 
             String formattedDate = dto.createdAt() != null ? dto.createdAt().format(DATE_FORMATTER) : "-";

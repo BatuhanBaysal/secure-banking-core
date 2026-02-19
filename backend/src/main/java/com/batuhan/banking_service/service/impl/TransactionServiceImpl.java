@@ -56,6 +56,7 @@ public class TransactionServiceImpl implements TransactionService {
     public TransactionResponse transferMoney(TransactionRequest request) {
         log.info("Processing transfer: {} to {} amount: {}", request.senderIban(), request.receiverIban(), request.amount());
         validateSelfTransfer(request);
+
         List<AccountEntity> lockedAccounts = lockAccountsAlphabetically(request.senderIban(), request.receiverIban());
 
         AccountEntity sender = findAccountInList(lockedAccounts, request.senderIban());
@@ -76,7 +77,7 @@ public class TransactionServiceImpl implements TransactionService {
             sendNotification(sender, receiver, transaction);
         } catch (Exception e) {
             log.error("Notification could not be sent for Reference: {}. Error: {}",
-                    transaction.getReferenceNumber(), e.getMessage());
+                    transaction.getReferenceNumber(), e.getMessage(), e);
         }
     }
 
@@ -92,7 +93,11 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     private TransactionEntity saveTransactionRecord(TransactionRequest request, AccountEntity sender, AccountEntity receiver) {
-        String ref = "TX-" + System.currentTimeMillis() + "-" + UUID.randomUUID().toString().substring(0, 5).toUpperCase();
+        String ref = "TX-%d-%s".formatted(
+                System.currentTimeMillis(),
+                UUID.randomUUID().toString().substring(0, 5).toUpperCase()
+        );
+
         return transactionRepository.save(TransactionEntity.builder()
                 .referenceNumber(ref)
                 .senderAccount(sender)
@@ -117,7 +122,7 @@ public class TransactionServiceImpl implements TransactionService {
         try {
             return pdfService.generateTransactionReceipt(transaction).readAllBytes();
         } catch (Exception e) {
-            log.error("Receipt generation error for TX {}: {}", id, e.getMessage());
+            log.error("Receipt generation error for TX {}: {}", id, e.getMessage(), e);
             throw new BankingServiceException("Could not generate PDF receipt", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -216,10 +221,6 @@ public class TransactionServiceImpl implements TransactionService {
         if (request.senderIban().trim().equalsIgnoreCase(request.receiverIban().trim())) {
             throw new BankingServiceException("Sender and receiver accounts cannot be the same", HttpStatus.BAD_REQUEST);
         }
-    }
-
-    private boolean isAdmin() {
-        return businessValidator.isAdmin();
     }
 
     private String getAuthenticatedUserEmail() {

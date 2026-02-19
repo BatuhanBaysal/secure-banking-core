@@ -2,10 +2,12 @@ package com.batuhan.banking_service.service.helper;
 
 import com.batuhan.banking_service.entity.AccountEntity;
 import com.batuhan.banking_service.entity.AccountLimitEntity;
+import com.batuhan.banking_service.exception.BankingServiceException;
 import com.batuhan.banking_service.repository.AccountLimitRepository;
 import com.batuhan.banking_service.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,11 +30,12 @@ public class AccountingManager {
 
         if (sender.getBalance().compareTo(amount) < 0) {
             log.error("Accounting failed: Insufficient balance for IBAN: {}", sender.getIban());
-            throw new RuntimeException("Insufficient balance");
+            throw new BankingServiceException("Insufficient balance", HttpStatus.BAD_REQUEST);
         }
 
         sender.setBalance(sender.getBalance().subtract(amount));
         receiver.setBalance(receiver.getBalance().add(amount));
+
         updateDailyLimitUsage(sender, amount);
 
         accountRepository.save(sender);
@@ -44,23 +47,13 @@ public class AccountingManager {
         LocalDate today = LocalDate.now();
 
         AccountLimitEntity limit = limitRepository.findByAccountIdAndLimitDate(sender.getId(), today)
-                .orElseGet(() -> {
-                    log.debug("No limit record found for today ({}). Creating new record for account: {}",
-                            today, sender.getIban());
-                    return AccountLimitEntity.builder()
-                            .account(sender)
-                            .usedAmount(BigDecimal.ZERO)
-                            .dailyLimit(sender.getDailyLimit())
-                            .limitDate(today)
-                            .active(true)
-                            .build();
-                });
+                .orElseGet(() -> createNewDailyLimit(sender, today));
 
         BigDecimal newUsedAmount = limit.getUsedAmount().add(amount);
 
         if (newUsedAmount.compareTo(limit.getDailyLimit()) > 0) {
             log.error("Accounting failed: Daily limit exceeded for IBAN: {}", sender.getIban());
-            throw new RuntimeException("Daily limit exceeded");
+            throw new BankingServiceException("Daily limit exceeded", HttpStatus.BAD_REQUEST);
         }
 
         limit.setUsedAmount(newUsedAmount);
@@ -68,5 +61,17 @@ public class AccountingManager {
 
         limitRepository.save(limit);
         log.debug("Daily limit updated: {} used today for IBAN: {}", limit.getUsedAmount(), sender.getIban());
+    }
+
+    private AccountLimitEntity createNewDailyLimit(AccountEntity sender, LocalDate date) {
+        log.debug("No limit record found for today ({}). Creating new record for account: {}",
+                date, sender.getIban());
+        return AccountLimitEntity.builder()
+                .account(sender)
+                .usedAmount(BigDecimal.ZERO)
+                .dailyLimit(sender.getDailyLimit())
+                .limitDate(date)
+                .active(true)
+                .build();
     }
 }

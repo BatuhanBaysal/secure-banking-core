@@ -1,17 +1,24 @@
 package com.batuhan.banking_service.config.util;
 
 import java.math.BigInteger;
-import java.util.Random;
+import java.security.SecureRandom;
 
 public final class DataGenerator {
 
-    private static final Random RANDOM = new Random();
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     public static final String BANK_CODE = "00088";
+
+    private DataGenerator() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
 
     public static String generateTckn(int seed) {
         int[] digits = new int[11];
         digits[0] = 1 + (seed % 9);
-        for (int i = 1; i < 9; i++) digits[i] = RANDOM.nextInt(10);
+
+        for (int i = 1; i < 9; i++) {
+            digits[i] = SECURE_RANDOM.nextInt(10);
+        }
 
         int oddSum = digits[0] + digits[2] + digits[4] + digits[6] + digits[8];
         int evenSum = digits[1] + digits[3] + digits[5] + digits[7];

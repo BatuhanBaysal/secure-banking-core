@@ -1,12 +1,14 @@
 package com.batuhan.banking_service.service.impl;
 
 import com.batuhan.banking_service.entity.TransactionEntity;
+import com.batuhan.banking_service.exception.BankingServiceException;
 import com.batuhan.banking_service.service.PdfService;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -25,36 +27,32 @@ public class PdfServiceImpl implements PdfService {
 
     @Override
     public ByteArrayInputStream generateTransactionReceipt(TransactionEntity transaction) {
-        Document document = new Document(PageSize.A4);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-        try {
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            Document document = new Document(PageSize.A4);
             PdfWriter.getInstance(document, out);
+
             document.open();
             addTitle(document);
             addTransactionDetailsTable(document, transaction);
             addFooter(document);
             document.close();
-        } catch (DocumentException e) {
-            log.error("PDF Document error for TX {}: {}", transaction.getReferenceNumber(), e.getMessage());
-            throw new RuntimeException("Error while creating PDF: " + e.getMessage());
-        } finally {
-            if (document.isOpen()) {
-                document.close();
-            }
-        }
 
-        return new ByteArrayInputStream(out.toByteArray());
+            return new ByteArrayInputStream(out.toByteArray());
+
+        } catch (Exception e) {
+            log.error("PDF generation failed for TX {}: {}", transaction.getReferenceNumber(), e.getMessage());
+            throw new BankingServiceException("Failed to generate PDF receipt", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    private void addTitle(Document document) throws DocumentException {
+    private void addTitle(Document document) {
         Paragraph title = new Paragraph("BANK TRANSACTION RECEIPT", TITLE_FONT);
         title.setAlignment(Element.ALIGN_CENTER);
         title.setSpacingAfter(25);
         document.add(title);
     }
 
-    private void addTransactionDetailsTable(Document document, TransactionEntity transaction) throws DocumentException {
+    private void addTransactionDetailsTable(Document document, TransactionEntity transaction) {
         PdfPTable table = new PdfPTable(2);
         table.setWidthPercentage(100);
         table.setSpacingBefore(10f);
@@ -96,7 +94,7 @@ public class PdfServiceImpl implements PdfService {
         table.addCell(valueCell);
     }
 
-    private void addFooter(Document document) throws DocumentException {
+    private void addFooter(Document document) {
         Paragraph footer = new Paragraph("\nThis is a computer-generated receipt and does not require a physical signature.",
                 FontFactory.getFont(FontFactory.HELVETICA, 10, java.awt.Color.GRAY));
         footer.setAlignment(Element.ALIGN_CENTER);

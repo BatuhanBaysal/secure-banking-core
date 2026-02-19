@@ -14,12 +14,12 @@ public class RabbitMQConfig {
     public static final String ROUTING_KEY = "transfer_routing_key";
 
     @Bean
-    public Queue queue() {
+    public Queue transferEmailQueue() {
         return new Queue(QUEUE, true);
     }
 
     @Bean
-    public DirectExchange exchange() {
+    public DirectExchange transferExchange() {
         return new DirectExchange(EXCHANGE);
     }
 

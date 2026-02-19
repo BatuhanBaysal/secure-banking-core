@@ -19,13 +19,17 @@
 
     <properties>
         <java.version>17</java.version>
-        <skipTests>true</skipTests>
+        <skipTests>false</skipTests>
         <jjwt.version>0.11.5</jjwt.version>
         <springdoc.version>2.8.1</springdoc.version>
         <poi.version>5.2.3</poi.version>
         <openpdf.version>2.0.3</openpdf.version>
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+        <sonar.host.url>http://localhost:9000</sonar.host.url>
+        <sonar.projectKey>banking-service</sonar.projectKey>
+        <sonar.projectName>Banking Service</sonar.projectName>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
     <dependencies>
@@ -191,6 +195,30 @@
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>4.0.0.4121</version>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.12</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

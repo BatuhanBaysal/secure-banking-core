@@ -19,7 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.security.SecureRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +29,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final BankingBusinessValidator businessValidator;
+    private final SecureRandom secureRandom = new SecureRandom();
 
     @Override
     @Transactional
@@ -115,7 +116,12 @@ public class UserServiceImpl implements UserService {
         String customerNumber;
         boolean exists;
         do {
-            customerNumber = String.valueOf(ThreadLocalRandom.current().nextLong(1000000000L, 9999999999L));
+            long min = 1000000000L;
+            long max = 9999999999L;
+            long range = max - min + 1;
+            long randomValue = min + (long) (secureRandom.nextDouble() * range);
+
+            customerNumber = String.valueOf(randomValue);
             exists = userRepository.existsByCustomerNumber(customerNumber);
         } while (exists);
 

@@ -12,7 +12,6 @@ import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
@@ -25,7 +24,7 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BankingServiceException.class)
-    public ResponseEntity<GlobalResponse<Void>> handleBankingException(BankingServiceException ex) {
+    ResponseEntity<GlobalResponse<Void>> handleBankingException(BankingServiceException ex) {
         log.warn("Business Logic Violation: {}", ex.getMessage());
         return ResponseEntity
                 .status(ex.getStatus())
@@ -33,7 +32,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<GlobalResponse<Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    ResponseEntity<GlobalResponse<Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
@@ -50,8 +49,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<GlobalResponse<Void>> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
-        String typeName = ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "unknown";
+    ResponseEntity<GlobalResponse<Void>> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        Class<?> requiredType = ex.getRequiredType();
+        String typeName = (requiredType != null) ? requiredType.getSimpleName() : "unknown";
+
         String message = String.format("Parameter '%s': Value '%s' is not of required type (%s)",
                 ex.getName(), ex.getValue(), typeName);
 
@@ -62,7 +63,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AuthorizationDeniedException.class)
-    public ResponseEntity<GlobalResponse<Void>> handleAccessDeniedException(AuthorizationDeniedException ex) {
+    ResponseEntity<GlobalResponse<Void>> handleAccessDeniedException(AuthorizationDeniedException ex) {
         log.warn("Access denied: {}", ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
@@ -70,8 +71,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(RequestNotPermitted.class)
-    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
-    public ResponseEntity<GlobalResponse<Void>> handleRateLimiterException(RequestNotPermitted e) {
+    ResponseEntity<GlobalResponse<Void>> handleRateLimiterException(RequestNotPermitted e) {
         log.warn("Rate limit exceeded: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.TOO_MANY_REQUESTS)
@@ -79,8 +79,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CallNotPermittedException.class)
-    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
-    public ResponseEntity<GlobalResponse<Void>> handleCircuitBreakerException(CallNotPermittedException e) {
+    ResponseEntity<GlobalResponse<Void>> handleCircuitBreakerException(CallNotPermittedException e) {
         log.error("Circuit breaker is open: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
@@ -88,8 +87,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BulkheadFullException.class)
-    @ResponseStatus(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED)
-    public ResponseEntity<GlobalResponse<Void>> handleBulkheadException(BulkheadFullException e) {
+    ResponseEntity<GlobalResponse<Void>> handleBulkheadException(BulkheadFullException e) {
         log.warn("Bulkhead limit reached: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
@@ -97,7 +95,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<GlobalResponse<Void>> handleGeneralException(Exception ex) {
+    ResponseEntity<GlobalResponse<Void>> handleGeneralException(Exception ex) {
         log.error("Unexpected error occurred: ", ex);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)

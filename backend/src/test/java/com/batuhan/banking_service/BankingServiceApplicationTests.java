@@ -4,6 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.context.ApplicationContext;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration test for verifying the Spring Application Context.
@@ -17,7 +19,7 @@ class BankingServiceApplicationTests {
 
 	@Test
 	@DisplayName("Success: Application context should load without any configuration errors")
-	void contextLoads() {
-
+	void contextLoads(ApplicationContext context) {
+		assertThat(context).isNotNull();
 	}
 }

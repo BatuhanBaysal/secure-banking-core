@@ -17,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -84,17 +83,16 @@ public class UserController {
 
     @GetMapping("/me/roles")
     @Operation(summary = "Debug: Check current session roles and claims")
-    public ResponseEntity<?> getMyRoles() {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
+    public ResponseEntity<Map<String, Object>> getMyRoles(JwtAuthenticationToken jwtAuth) {
         Map<String, Object> details = new LinkedHashMap<>();
 
-        if (auth instanceof JwtAuthenticationToken jwtAuth) {
+        if (jwtAuth != null) {
             details.put("user_id", jwtAuth.getName());
             details.put("email_in_token", jwtAuth.getToken().getClaim("email"));
             details.put("all_claims", jwtAuth.getToken().getClaims());
+            details.put("granted_authorities", jwtAuth.getAuthorities());
         }
 
-        details.put("granted_authorities", auth.getAuthorities());
         return ResponseEntity.ok(details);
     }
 

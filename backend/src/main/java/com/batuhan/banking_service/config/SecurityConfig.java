@@ -21,8 +21,9 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 @Configuration
 @EnableWebSecurity
@@ -30,6 +31,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class SecurityConfig {
+
+    private static final String ROLES_CLAIM = "roles";
+    private static final String REALM_ACCESS_CLAIM = "realm_access";
 
     @Value("${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}")
     private String jwkSetUri;
@@ -79,24 +83,21 @@ public class SecurityConfig {
 
     private Converter<Jwt, Collection<GrantedAuthority>> jwtToAuthoritiesConverter() {
         return jwt -> {
-            java.util.List<String> roles = new java.util.ArrayList<>();
+            Set<String> roles = new HashSet<>();
 
-            Map<String, Object> realmAccess = jwt.getClaim("realm_access");
-            if (realmAccess != null && realmAccess.get("roles") instanceof Collection) {
-                roles.addAll((Collection<String>) realmAccess.get("roles"));
+            Map<String, Object> realmAccess = jwt.getClaim(REALM_ACCESS_CLAIM);
+            if (realmAccess != null && realmAccess.get(ROLES_CLAIM) instanceof Collection) {
+                roles.addAll((Collection<String>) realmAccess.get(ROLES_CLAIM));
             }
 
-            if (jwt.getClaim("roles") instanceof Collection) {
-                Collection<String> topLevelRoles = jwt.getClaim("roles");
-                topLevelRoles.forEach(r -> {
-                    if (!roles.contains(r)) roles.add(r);
-                });
+            if (jwt.getClaim(ROLES_CLAIM) instanceof Collection) {
+                roles.addAll((Collection<String>) jwt.getClaim(ROLES_CLAIM));
             }
 
             log.debug("Roles extracted from the token: {}", roles);
             return roles.stream()
-                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                    .collect(Collectors.toList());
+                    .map(role -> (GrantedAuthority) new SimpleGrantedAuthority("ROLE_" + role))
+                    .toList();
         };
     }
 }
