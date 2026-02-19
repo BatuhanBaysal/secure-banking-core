@@ -1,0 +1,59 @@
+spring:
+  # --- TEST DATABASE ---
+  datasource:
+    url: jdbc:h2:mem:testdb_${random.uuid};DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+
+  # --- JPA & DIALECT ---
+  jpa:
+    database-platform: com.batuhan.banking_service.repository.H2PostgreSQLDialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate.format_sql: true
+
+  # --- SECURITY ---
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8080/realms/banking/protocol/openid-connect/certs
+
+  # --- TEST MIGRATIONS ---
+  liquibase:
+    enabled: true
+
+  # --- DISABLE EXTERNAL SERVICES ---
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: false
+  mail:
+    host: localhost
+
+# --- RESILIENCE4J (RATE LIMITER) ---
+resilience4j.ratelimiter:
+  instances:
+    accountCreationLimiter:
+      limitForPeriod: 100
+      limitRefreshPeriod: 1s
+      timeoutDuration: 0
+
+# --- LOGGING ---
+logging:
+  level:
+    root: INFO
+    com.batuhan: DEBUG
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# --- CUSTOM APP PROPERTIES ---
+application:
+  security:
+    jwt:
+      secret-key: staticTestKeyForUnitAndIntegrationTestsThatIsLongEnoughToBeValid32Chars
+      expiration: 86400000
