@@ -1,0 +1,29 @@
+DOCKER DEPLOYMENT AND MANAGEMENT GUIDE
+--------------------------------------
+
+1. Build and Start the Entire System (Initial Setup):
+docker compose up -d --build
+
+2. Start Infrastructure Services (Database, Cache, and Message Broker):
+docker compose up -d postgres-db redis-cache rabbitmq
+
+3. Start Identity and Access Management (Security):
+docker compose up -d keycloak
+
+4. Start Application and Observability Stack:
+docker compose up -d banking-app prometheus grafana jaeger loki
+
+5. Check Container Status:
+docker compose ps
+
+6. Monitor Application Logs (Real-time):
+docker logs -f banking-service-app
+
+7. Monitor Keycloak Logs (Real-time):
+docker logs -f keycloak
+
+---
+Troubleshooting Tip:
+To reset the entire environment (including volumes/data):
+docker compose down -v
+Then run the command in Step 1.
