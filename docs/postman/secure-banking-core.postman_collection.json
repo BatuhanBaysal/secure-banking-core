@@ -1,0 +1,719 @@
+{
+  "info": {
+    "_postman_id": "54b6ead1-8ffb-4b78-8e97-94b20c6536a4",
+    "name": "Online-Banking",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "36870689"
+  },
+  "item": [
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"firstName\": \"batuhan\",\r\n    \"lastName\": \"baysal\",\r\n    \"tckn\": \"10000000146\",\r\n    \"email\": \"batuhanbaysal3@gmail.com\",\r\n    \"password\": \"secure!Pass14\",\r\n    \"birthDate\": \"2000-08-14\",\r\n    \"phoneNumber\": \"5329998877\", \r\n    \"address\": {\r\n        \"city\": \"Istanbul\",\r\n        \"district\": \"Merkez\", \r\n        \"street\": \"Zeytinburnu\",\r\n        \"zipCode\": \"32500\",\r\n        \"country\": \"Turkey\",\r\n        \"addressDetail\": \"Daire: 5, Kat: 2\"\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/users",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlc2pFZEE5Yk52SDlzSHBSaFk2X1pDYTZxS0h3WjVmTXM5QkQ3aFNobEZrIn0.eyJleHAiOjE3NzA4OTc2MzksImlhdCI6MTc3MDg5NzMzOSwianRpIjoiYjI1NmU0ZTgtNTIzYy00YzQ4LThmNjAtNTZmNzFiMzFjYWIxIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgxL3JlYWxtcy9iYW5raW5nLXJlYWxtIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImUxOWMwMDIzLWQzYTctNDAzZS04OGQzLWI5MTVmMWIzOGQ1YSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImJhbmtpbmctc2VydmljZS1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiMDEzNzBkODctZTA3Ny00NzMyLTgxZGMtM2YzZTgwYjQxZjQ1IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjgwODAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtYmFua2luZy1yZWFsbSIsIm9mZmxpbmVfYWNjZXNzIiwiQURNSU4iLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoiZW1haWwgcHJvZmlsZSIsInNpZCI6IjAxMzcwZDg3LWUwNzctNDczMi04MWRjLTNmM2U4MGI0MWY0NSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLWJhbmtpbmctcmVhbG0iLCJvZmZsaW5lX2FjY2VzcyIsIkFETUlOIiwidW1hX2F1dGhvcml6YXRpb24iXSwibmFtZSI6IkJhdHVoYW4gQmF5c2FsIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiYmF0dWhhbiIsImdpdmVuX25hbWUiOiJCYXR1aGFuIiwiZmFtaWx5X25hbWUiOiJCYXlzYWwiLCJlbWFpbCI6ImJhdHVoYW5iYXlzYWwzQGdtYWlsLmNvbSJ9.yyvr9LEOAXMaaTt9jFXRD6fZ71AyxBz2ew6nq2Vm4pC4xDBs29oBCfzY25-6qcG9V__XLX5z-cryR2s3LXohPwYji-fBSDGkHMl6PW_4rb_5mB_TluFjlfCfUk913nQgM-LHwh1ZgHFS7fWi5iRi9qay7o4A9Ayk5y6AGEktoZNrM3MksK-YlZrtU63nGzM8bnqj13TVxFdfBlPqyan85m-VfcK_wgI6hHREhZsXaiktxMW4B257N9kUWF4-UzmLnVdM8WfQ_-wY6shd0aU5AtZTSCI8kWuYxdl_qTlB_4wDpOKDt5BHh2tnQ1qLTvmq1_Sc77AD_Zx8miJoggfVvg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"firstName\": \"batu\",\r\n    \"lastName\": \"baysal\",\r\n    \"tckn\": \"10000000146\",\r\n    \"email\": \"batuhanbaysal3@gmail.com\",\r\n    \"password\": \"secure!Pass141414\",\r\n    \"birthDate\": \"2000-08-14\",\r\n    \"phoneNumber\": \"5329998811\", \r\n    \"address\": {\r\n        \"city\": \"Istanbul\",\r\n        \"district\": \"Merkez\", \r\n        \"street\": \"Zeytinburnu\",\r\n        \"zipCode\": \"32500\",\r\n        \"country\": \"Turkey\",\r\n        \"addressDetail\": \"Daire: 4, Kat: 1\"\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/users/4302493419",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "4302493419"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlc2pFZEE5Yk52SDlzSHBSaFk2X1pDYTZxS0h3WjVmTXM5QkQ3aFNobEZrIn0.eyJleHAiOjE3NzA5MDAxNzAsImlhdCI6MTc3MDg5OTg3MCwianRpIjoiMDMzOTg2ZDAtYjZjYy00MjdkLTk2NmQtN2VhNGQ2OGUyNDJjIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgxL3JlYWxtcy9iYW5raW5nLXJlYWxtIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImUxOWMwMDIzLWQzYTctNDAzZS04OGQzLWI5MTVmMWIzOGQ1YSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImJhbmtpbmctc2VydmljZS1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiZGM1NDEwYTUtZDk3YS00YWNjLTg0NjAtNmZmMmI4YzNlNzFlIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjgwODAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtYmFua2luZy1yZWFsbSIsIm9mZmxpbmVfYWNjZXNzIiwiQURNSU4iLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoiZW1haWwgcHJvZmlsZSIsInNpZCI6ImRjNTQxMGE1LWQ5N2EtNGFjYy04NDYwLTZmZjJiOGMzZTcxZSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLWJhbmtpbmctcmVhbG0iLCJvZmZsaW5lX2FjY2VzcyIsIkFETUlOIiwidW1hX2F1dGhvcml6YXRpb24iXSwibmFtZSI6IkJhdHVoYW4gQmF5c2FsIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiYmF0dWhhbiIsImdpdmVuX25hbWUiOiJCYXR1aGFuIiwiZmFtaWx5X25hbWUiOiJCYXlzYWwiLCJlbWFpbCI6ImJhdHVoYW5iYXlzYWwzQGdtYWlsLmNvbSJ9.THlWn4bBTvz3bVbUVvqwx4ZHQ85FgHiife5dMJiQvpu9uqklxfYYvxfe4roInTTESVv1OtKuQJkpiuB0zNrvOB6Wn7xZF7g9Ws0zEWfreGaZfKWN4NU9HlyfvSQd8HhQFF2Nx-isuwfJ9OwY5TM_9Po4w2QLbIQJU0fex8boDADeXUTPvRCipQmkK-dgAdXON5FW8wglrY_WocvNXC9ZROp9CzMxzcDlssKlFnJQ8kZWf-VIzoYX59rMc-TBmVl4CgjdMy4-HPOVHIhxRx9lgZXyLvFTvQ0iRr1lwOPYouckqj7w3_8LvMJpXGQNsh06g6r_Ssoh5efyP4k01LQvuQ",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/users/4302493419",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "4302493419"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlc2pFZEE5Yk52SDlzSHBSaFk2X1pDYTZxS0h3WjVmTXM5QkQ3aFNobEZrIn0.eyJleHAiOjE3NzA4OTY4MjAsImlhdCI6MTc3MDg5NjUyMCwianRpIjoiZTY5MzQ2ZDUtZjUzMS00YzhjLWFiMDUtYzE0ZjJmODY1Y2U2IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgxL3JlYWxtcy9iYW5raW5nLXJlYWxtIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImUxOWMwMDIzLWQzYTctNDAzZS04OGQzLWI5MTVmMWIzOGQ1YSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImJhbmtpbmctc2VydmljZS1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiZTg0MjYyNGItMWE2ZS00MzYwLTg0MjEtYWQxODI1ZjVjMDAxIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjgwODAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtYmFua2luZy1yZWFsbSIsIm9mZmxpbmVfYWNjZXNzIiwiQURNSU4iLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoiZW1haWwgcHJvZmlsZSIsInNpZCI6ImU4NDI2MjRiLTFhNmUtNDM2MC04NDIxLWFkMTgyNWY1YzAwMSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLWJhbmtpbmctcmVhbG0iLCJvZmZsaW5lX2FjY2VzcyIsIkFETUlOIiwidW1hX2F1dGhvcml6YXRpb24iXSwibmFtZSI6IkJhdHVoYW4gQmF5c2FsIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiYmF0dWhhbiIsImdpdmVuX25hbWUiOiJCYXR1aGFuIiwiZmFtaWx5X25hbWUiOiJCYXlzYWwiLCJlbWFpbCI6ImJhdHVoYW5iYXlzYWwzQGdtYWlsLmNvbSJ9.cXOMxhfU-ITEhyLAZO8OOMEFsv6btKcE5Fw2rH5dMaxre4gqiflZbUeFJUmZuWTDlqGBOo0CRNORwzI6asF-kMm2E7hJI3zFSUcDZVpCBbKu2V1aCZGf3gHcGkfWCDRZHlv4b77IRDyJU6QFrjR5OmKvJ6Ghk8a8wT_5dzDuEH0cFS8YPZAr4HYj5_mZtwNCK2rZaxOSvrl2rOfkGD9P0QFoovp75eN0N_PHZAywmPv_GFLv4dl9-fT8gPvJinevTFewhULzqjFUseQqVLMThmF3QBA-VxbWPr_IBJFmYMFfPGKbq8_VxDlVBFaT8Z8_4gzsZm5KkBo6j7b5QkFBKw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/users?page=0&size=10&sort=createdAt,desc",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt,desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/users/8932758950",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "8932758950"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Accounts",
+      "item": [
+        {
+          "name": "Create-Account",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGl2ZWxpQGV4YW1wbGUuY29tIiwiaWF0IjoxNzY5MTY3MjQ0LCJleHAiOjE3NjkyNTM2NDR9.OwKfgMNehaV3kdGoI-qc8bnIPCazw772xqcPsVDAnNA",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"customerNumber\": \"8932758950\",\r\n    \"currency\": \"TRY\",\r\n    \"dailyLimit\": 25000.0,\r\n    \"initialBalance\": 1000.0\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/accounts",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "accounts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Account by IBAN",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlc2pFZEE5Yk52SDlzSHBSaFk2X1pDYTZxS0h3WjVmTXM5QkQ3aFNobEZrIn0.eyJleHAiOjE3NzA5MDAxNzAsImlhdCI6MTc3MDg5OTg3MCwianRpIjoiMDMzOTg2ZDAtYjZjYy00MjdkLTk2NmQtN2VhNGQ2OGUyNDJjIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgxL3JlYWxtcy9iYW5raW5nLXJlYWxtIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImUxOWMwMDIzLWQzYTctNDAzZS04OGQzLWI5MTVmMWIzOGQ1YSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImJhbmtpbmctc2VydmljZS1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiZGM1NDEwYTUtZDk3YS00YWNjLTg0NjAtNmZmMmI4YzNlNzFlIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjgwODAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtYmFua2luZy1yZWFsbSIsIm9mZmxpbmVfYWNjZXNzIiwiQURNSU4iLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoiZW1haWwgcHJvZmlsZSIsInNpZCI6ImRjNTQxMGE1LWQ5N2EtNGFjYy04NDYwLTZmZjJiOGMzZTcxZSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLWJhbmtpbmctcmVhbG0iLCJvZmZsaW5lX2FjY2VzcyIsIkFETUlOIiwidW1hX2F1dGhvcml6YXRpb24iXSwibmFtZSI6IkJhdHVoYW4gQmF5c2FsIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiYmF0dWhhbiIsImdpdmVuX25hbWUiOiJCYXR1aGFuIiwiZmFtaWx5X25hbWUiOiJCYXlzYWwiLCJlbWFpbCI6ImJhdHVoYW5iYXlzYWwzQGdtYWlsLmNvbSJ9.THlWn4bBTvz3bVbUVvqwx4ZHQ85FgHiife5dMJiQvpu9uqklxfYYvxfe4roInTTESVv1OtKuQJkpiuB0zNrvOB6Wn7xZF7g9Ws0zEWfreGaZfKWN4NU9HlyfvSQd8HhQFF2Nx-isuwfJ9OwY5TM_9Po4w2QLbIQJU0fex8boDADeXUTPvRCipQmkK-dgAdXON5FW8wglrY_WocvNXC9ZROp9CzMxzcDlssKlFnJQ8kZWf-VIzoYX59rMc-TBmVl4CgjdMy4-HPOVHIhxRx9lgZXyLvFTvQ0iRr1lwOPYouckqj7w3_8LvMJpXGQNsh06g6r_Ssoh5efyP4k01LQvuQ",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/accounts/TR370006227707985049719615",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "accounts",
+                "TR370006227707985049719615"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Accounts by Customer",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlc2pFZEE5Yk52SDlzSHBSaFk2X1pDYTZxS0h3WjVmTXM5QkQ3aFNobEZrIn0.eyJleHAiOjE3NzA5MDAxNzAsImlhdCI6MTc3MDg5OTg3MCwianRpIjoiMDMzOTg2ZDAtYjZjYy00MjdkLTk2NmQtN2VhNGQ2OGUyNDJjIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgxL3JlYWxtcy9iYW5raW5nLXJlYWxtIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImUxOWMwMDIzLWQzYTctNDAzZS04OGQzLWI5MTVmMWIzOGQ1YSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImJhbmtpbmctc2VydmljZS1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiZGM1NDEwYTUtZDk3YS00YWNjLTg0NjAtNmZmMmI4YzNlNzFlIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjgwODAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtYmFua2luZy1yZWFsbSIsIm9mZmxpbmVfYWNjZXNzIiwiQURNSU4iLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoiZW1haWwgcHJvZmlsZSIsInNpZCI6ImRjNTQxMGE1LWQ5N2EtNGFjYy04NDYwLTZmZjJiOGMzZTcxZSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLWJhbmtpbmctcmVhbG0iLCJvZmZsaW5lX2FjY2VzcyIsIkFETUlOIiwidW1hX2F1dGhvcml6YXRpb24iXSwibmFtZSI6IkJhdHVoYW4gQmF5c2FsIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiYmF0dWhhbiIsImdpdmVuX25hbWUiOiJCYXR1aGFuIiwiZmFtaWx5X25hbWUiOiJCYXlzYWwiLCJlbWFpbCI6ImJhdHVoYW5iYXlzYWwzQGdtYWlsLmNvbSJ9.THlWn4bBTvz3bVbUVvqwx4ZHQ85FgHiife5dMJiQvpu9uqklxfYYvxfe4roInTTESVv1OtKuQJkpiuB0zNrvOB6Wn7xZF7g9Ws0zEWfreGaZfKWN4NU9HlyfvSQd8HhQFF2Nx-isuwfJ9OwY5TM_9Po4w2QLbIQJU0fex8boDADeXUTPvRCipQmkK-dgAdXON5FW8wglrY_WocvNXC9ZROp9CzMxzcDlssKlFnJQ8kZWf-VIzoYX59rMc-TBmVl4CgjdMy4-HPOVHIhxRx9lgZXyLvFTvQ0iRr1lwOPYouckqj7w3_8LvMJpXGQNsh06g6r_Ssoh5efyP4k01LQvuQ",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/accounts/customer/CUST9000",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "accounts",
+                "customer",
+                "CUST9000"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Close Account",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/accounts/TR123456789012345678901234",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "accounts",
+                "TR123456789012345678901234"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "Transfer",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGl2ZWxpQGV4YW1wbGUuY29tIiwiaWF0IjoxNzY5MTY3MjQ0LCJleHAiOjE3NjkyNTM2NDR9.OwKfgMNehaV3kdGoI-qc8bnIPCazw772xqcPsVDAnNA",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"senderIban\": \"TR540006203562327707039762\",\r\n    \"receiverIban\": \"TR100006203414736058492630\",\r\n    \"amount\": 200.00,\r\n    \"description\": \"Monthly Rent\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/transactions/transfer",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "transactions",
+                "transfer"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "History",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlc2pFZEE5Yk52SDlzSHBSaFk2X1pDYTZxS0h3WjVmTXM5QkQ3aFNobEZrIn0.eyJleHAiOjE3NzA5MDAxNzAsImlhdCI6MTc3MDg5OTg3MCwianRpIjoiMDMzOTg2ZDAtYjZjYy00MjdkLTk2NmQtN2VhNGQ2OGUyNDJjIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgxL3JlYWxtcy9iYW5raW5nLXJlYWxtIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImUxOWMwMDIzLWQzYTctNDAzZS04OGQzLWI5MTVmMWIzOGQ1YSIsInR5cCI6IkJlYXJlciIsImF6cCI6ImJhbmtpbmctc2VydmljZS1jbGllbnQiLCJzZXNzaW9uX3N0YXRlIjoiZGM1NDEwYTUtZDk3YS00YWNjLTg0NjAtNmZmMmI4YzNlNzFlIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjgwODAiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtYmFua2luZy1yZWFsbSIsIm9mZmxpbmVfYWNjZXNzIiwiQURNSU4iLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoiZW1haWwgcHJvZmlsZSIsInNpZCI6ImRjNTQxMGE1LWQ5N2EtNGFjYy04NDYwLTZmZjJiOGMzZTcxZSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLWJhbmtpbmctcmVhbG0iLCJvZmZsaW5lX2FjY2VzcyIsIkFETUlOIiwidW1hX2F1dGhvcml6YXRpb24iXSwibmFtZSI6IkJhdHVoYW4gQmF5c2FsIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiYmF0dWhhbiIsImdpdmVuX25hbWUiOiJCYXR1aGFuIiwiZmFtaWx5X25hbWUiOiJCYXlzYWwiLCJlbWFpbCI6ImJhdHVoYW5iYXlzYWwzQGdtYWlsLmNvbSJ9.THlWn4bBTvz3bVbUVvqwx4ZHQ85FgHiife5dMJiQvpu9uqklxfYYvxfe4roInTTESVv1OtKuQJkpiuB0zNrvOB6Wn7xZF7g9Ws0zEWfreGaZfKWN4NU9HlyfvSQd8HhQFF2Nx-isuwfJ9OwY5TM_9Po4w2QLbIQJU0fex8boDADeXUTPvRCipQmkK-dgAdXON5FW8wglrY_WocvNXC9ZROp9CzMxzcDlssKlFnJQ8kZWf-VIzoYX59rMc-TBmVl4CgjdMy4-HPOVHIhxRx9lgZXyLvFTvQ0iRr1lwOPYouckqj7w3_8LvMJpXGQNsh06g6r_Ssoh5efyP4k01LQvuQ",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"senderIban\": \"TR540006203562327707039762\",\r\n    \"receiverIban\": \"TR100006203414736058492630\",\r\n    \"amount\": 250.00,\r\n    \"description\": \"Market payment\"\r\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/transactions/history/TR540006203562327707039762?page=0&size=5",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "transactions",
+                "history",
+                "TR540006203562327707039762"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Trend",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGl2ZWxpQGV4YW1wbGUuY29tIiwiaWF0IjoxNzY5MTY3MjQ0LCJleHAiOjE3NjkyNTM2NDR9.OwKfgMNehaV3kdGoI-qc8bnIPCazw772xqcPsVDAnNA",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/transactions/dashboard/trend?iban=TR540006203562327707039762",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "transactions",
+                "dashboard",
+                "trend"
+              ],
+              "query": [
+                {
+                  "key": "iban",
+                  "value": "TR540006203562327707039762"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "summary",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGl2ZWxpQGV4YW1wbGUuY29tIiwiaWF0IjoxNzY5MTY3MjQ0LCJleHAiOjE3NjkyNTM2NDR9.OwKfgMNehaV3kdGoI-qc8bnIPCazw772xqcPsVDAnNA",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/transactions/dashboard/summary?iban=TR540006203562327707039762",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "transactions",
+                "dashboard",
+                "summary"
+              ],
+              "query": [
+                {
+                  "key": "iban",
+                  "value": "TR540006203562327707039762"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Filters",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGl2ZWxpQGV4YW1wbGUuY29tIiwiaWF0IjoxNzY5MTY3MjQ0LCJleHAiOjE3NjkyNTM2NDR9.OwKfgMNehaV3kdGoI-qc8bnIPCazw772xqcPsVDAnNA",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/transactions/filter?iban=TR540006203562327707039762&minAmount=100&maxAmount=5000&page=0&size=10",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "transactions",
+                "filter"
+              ],
+              "query": [
+                {
+                  "key": "iban",
+                  "value": "TR540006203562327707039762"
+                },
+                {
+                  "key": "minAmount",
+                  "value": "100"
+                },
+                {
+                  "key": "maxAmount",
+                  "value": "5000"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "excel",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGl2ZWxpQGV4YW1wbGUuY29tIiwiaWF0IjoxNzY5MTY3MjQ0LCJleHAiOjE3NjkyNTM2NDR9.OwKfgMNehaV3kdGoI-qc8bnIPCazw772xqcPsVDAnNA",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/transactions/download/excel?iban=TR540006203562327707039762",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "transactions",
+                "download",
+                "excel"
+              ],
+              "query": [
+                {
+                  "key": "iban",
+                  "value": "TR540006203562327707039762"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Download Receipt",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGl2ZWxpQGV4YW1wbGUuY29tIiwiaWF0IjoxNzY5MTY3MjQ0LCJleHAiOjE3NjkyNTM2NDR9.OwKfgMNehaV3kdGoI-qc8bnIPCazw772xqcPsVDAnNA",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/transactions/receipt/3",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "transactions",
+                "receipt",
+                "3"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Category Analysis",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGl2ZWxpQGV4YW1wbGUuY29tIiwiaWF0IjoxNzY5MTY3MjQ0LCJleHAiOjE3NjkyNTM2NDR9.OwKfgMNehaV3kdGoI-qc8bnIPCazw772xqcPsVDAnNA",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/transactions/dashboard/categories?iban=TR540006203562327707039762",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "transactions",
+                "dashboard",
+                "categories"
+              ],
+              "query": [
+                {
+                  "key": "iban",
+                  "value": "TR540006203562327707039762"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "KeyCloak",
+      "item": [
+        {
+          "name": "keycloak",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "password",
+                  "type": "text",
+                  "uuid": "616f5d11-3350-4735-b7ac-d9ea0a2d2133"
+                },
+                {
+                  "key": "client_id",
+                  "value": "banking-service-client",
+                  "type": "text",
+                  "uuid": "4ef99b6a-8fb3-44b0-8654-a7e68a28ace2"
+                },
+                {
+                  "key": "client_secret",
+                  "value": "kIIp1b0qUNLBC6uLR3Ov32VEQnRi54SZ",
+                  "type": "text",
+                  "uuid": "c3f77c80-9ffe-4f22-899b-53a70b0239d1"
+                },
+                {
+                  "key": "username",
+                  "value": "batuhan",
+                  "type": "text",
+                  "uuid": "3214ae46-a5b4-464b-8fb4-53bcbb583399"
+                },
+                {
+                  "key": "password",
+                  "value": "secure!Pass14",
+                  "type": "text",
+                  "uuid": "9843bedf-1aed-4231-b629-6d3486061ad3"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8081/realms/banking-realm/protocol/openid-connect/token",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "realms",
+                "banking-realm",
+                "protocol",
+                "openid-connect",
+                "token"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
