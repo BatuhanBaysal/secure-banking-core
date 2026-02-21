@@ -13,7 +13,7 @@ The system is built on a modern technology stack designed for high availability,
 ### 🗄️ Professional Database Migration
 Instead of manual scripts, the project uses **Liquibase** to manage the database lifecycle. Below is the internal log table that tracks applied migrations:
 
-![Liquibase Changelog](docs/screenshots/05_database_migration_liquibase.png)
+![Liquibase Changelog](../docs/screenshots/05_database_migration_liquibase.png)
 > **Insight:** The `databasechangelog` table guarantees that the "Initial banking schema" is correctly applied and synchronized across all instances.
 
 ### 📂 Project Directory Structure
@@ -63,7 +63,7 @@ This project is developed using the **Spring Boot 3** architecture. The configur
 
 > **Note:** The following log output demonstrates a successful system bootstrap, including database connectivity and RabbitMQ synchronization:
 
-![App Startup Logs](docs/screenshots/03_app_startup_success.png)
+![App Startup Logs](../docs/screenshots/03_app_startup_success.png)
 
 ---
 
@@ -73,7 +73,7 @@ This project utilizes **Hibernate/JPA** standards for database management and is
 ### 📊 Database Schema
 The following diagram illustrates the relational database structure and core entities:
 
-![Database Schema](docs/screenshots/06_system_architecture_diagram.png)
+![Database Schema](../docs/screenshots/06_system_architecture_diagram.png)
 
 ### 💎 Core Architectural Approaches
 * **BaseEntity Abstraction:** All database tables inherit from a `BaseEntity` class, which automatically tracks record creation and update timestamps.
@@ -291,7 +291,7 @@ These components lighten the load on service implementations, handle repetitive 
 # 🎮 API Layer (Controller)
 The Controller layer serves as the gateway of the application to the external world. This project implements a structure that strictly adheres to **RESTful standards**, prioritizes security, and provides comprehensive API documentation via **Swagger/OpenAPI**.
 
-![Swagger UI Documentation](docs/screenshots/04_swagger_docs.png)
+![Swagger UI Documentation](../docs/screenshots/04_swagger_docs.png)
 
 ### 🛠️ Controller Classes & Responsibilities
 There are **3 primary controllers** that bridge the business logic to the endpoints:
@@ -314,23 +314,23 @@ There are **3 primary controllers** that bridge the business logic to the endpoi
 ---
 
 ## 🚦 API Endpoints & Proof of Work
-The following section demonstrates the core functional flow. For more examples, visit the [Postman Screenshots Folder](docs/screenshots/postman/).
+The following section demonstrates the core functional flow. For more examples, visit the [Postman Screenshots Folder](../docs/screenshots/postman/).
 
 ### 🔄 Core Transaction Flow (Example)
 The system orchestrates a secure path from user registration to digital receipt generation.
 
 | Step | Action | Outcome                                                        |
 | :--- | :--- |:---------------------------------------------------------------|
-| **1. Register** | `POST /api/v1/users` | [View Details](docs/screenshots/postman/01_register_user.png)  |
-| **2. Account** | `POST /api/v1/accounts` | [View Details](docs/screenshots/postman/03_create_account.png) |
+| **1. Register** | `POST /api/v1/users` | [View Details](../docs/screenshots/postman/01_register_user.png)  |
+| **2. Account** | `POST /api/v1/accounts` | [View Details](../docs/screenshots/postman/03_create_account.png) |
 | **3. Transfer**| `POST /api/v1/transactions/transfer` | Real-time money transfer between accounts.                     |
 
 #### 📸 Transfer Execution Result
-![Money Transfer Request](docs/screenshots/postman/04_transfer_money.png)
+![Money Transfer Request](../docs/screenshots/postman/04_transfer_money.png)
 
 Upon success, the system triggers an **Asynchronous Email** and generates a **Digital Receipt**:
-* 📩 [View Email Notification](docs/screenshots/postman/05_transfer_email_notification.png)
-* 📄 [View PDF Receipt](docs/screenshots/postman/07_transaction_receipt_pdf.png)
+* 📩 [View Email Notification](../docs/screenshots/postman/05_transfer_email_notification.png)
+* 📄 [View PDF Receipt](../docs/screenshots/postman/07_transaction_receipt_pdf.png)
 
 ---
 
@@ -439,7 +439,7 @@ The testing environment is isolated from production settings to ensure safety an
 Due to the critical nature of financial transactions, this project is designed with a high test coverage ratio and a strong focus on reliability. The testing infrastructure is architected to isolate real database dependencies and ensure algorithmic data integrity.
 
 > **Status:** All **108 tests** are passing successfully across all layers.
-![Test Success Summary](docs/screenshots/20_banking_service_tests.png)
+![Test Success Summary](../docs/screenshots/20_banking_service_tests.png)
 
 ---
 
