@@ -11,6 +11,9 @@ logs/
 *.env
 .env.local
 
+# Kubernetes secrets
+k8s/banking-secrets.yaml
+
 # --- IntelliJ IDEA ---
 .idea/
 *.iws

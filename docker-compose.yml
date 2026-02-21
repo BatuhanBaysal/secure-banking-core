@@ -67,7 +67,7 @@ services:
       - MAIL_USERNAME=${MAIL_USERNAME}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
-      - KC_CLIENT_SECRET=kIIp1b0qUNLBC6uLR3Ov32VEQnRi54SZ
+      - KC_CLIENT_SECRET=${KC_CLIENT_SECRET}
       - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://jaeger:9411/api/v2/spans
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8080/realms/banking-realm/protocol/openid-connect/certs
     volumes:

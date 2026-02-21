@@ -96,7 +96,7 @@ keycloak:
   auth-server-url: http://keycloak:8080
   resource: banking-service-client
   credentials:
-    secret: ${KC_CLIENT_SECRET:kIIp1b0qUNLBC6uLR3Ov32VEQnRi54SZ}
+    secret: ${KC_CLIENT_SECRET}
 
 application:
   security:
